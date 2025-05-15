@@ -11,6 +11,7 @@ interface PageElementRef {
   children: string[]; // Store IDs of children
   parentId: string | null;
   isGroup?: boolean;
+  groupName?: string;
 }
 
 // For the tree representation
@@ -22,6 +23,7 @@ interface PageElementTree {
   children: PageElementTree[]; // Actual child elements
   parentId: string | null;
   isGroup?: boolean;
+  groupName?: string;
 }
 
 interface PageBuilderState {
@@ -34,6 +36,7 @@ interface PageBuilderState {
   selectElement: (id: string | null) => void;
   updateElementStyle: (id: string, style: Partial<ElementStyle>) => void;
   updateElementContent: (id: string, content: string) => void;
+  updateElementName: (id: string, name: string) => void;
   deleteElement: (id: string) => void;
   groupElements: (elementIds: string[]) => void;
   getElementsTree: () => PageElementTree;
@@ -52,9 +55,16 @@ const defaultStyles: ElementStyle = {
 const usePageBuilderStore = create<PageBuilderState>((set, get) => {
   // Create root element
   const rootId = uuidv4();
+  const navbarId = uuidv4();
+  const logoId = uuidv4();
+  const linksContainerId = uuidv4();
+  const link1Id = uuidv4();
+  const link2Id = uuidv4();
+  const link3Id = uuidv4();
 
   return {
     elements: [
+      // Root container
       {
         id: rootId,
         type: "div",
@@ -63,8 +73,93 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
           width: "100%",
           height: "100%",
         },
-        children: [],
+        children: [navbarId],
         parentId: null,
+        content: "Page Container",
+      },
+      // Navbar
+      {
+        id: navbarId,
+        type: "div",
+        style: {
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "16px",
+          backgroundColor: "#f8f9fa",
+          width: "100%",
+          borderBottom: "1px solid #dee2e6",
+        },
+        children: [logoId, linksContainerId],
+        parentId: rootId,
+        content: "Navbar",
+      },
+      // Logo
+      {
+        id: logoId,
+        type: "h1",
+        style: {
+          margin: "0",
+          fontSize: "24px",
+          fontWeight: "bold",
+          color: "#333",
+        },
+        children: [],
+        parentId: navbarId,
+        content: "Logo",
+      },
+      // Links container
+      {
+        id: linksContainerId,
+        type: "div",
+        style: {
+          display: "flex",
+          flexDirection: "row",
+          gap: "20px",
+        },
+        children: [link1Id, link2Id, link3Id],
+        parentId: navbarId,
+        content: "Links Container",
+      },
+      // Link 1
+      {
+        id: link1Id,
+        type: "a",
+        style: {
+          color: "#0d6efd",
+          textDecoration: "none",
+          fontSize: "16px",
+        },
+        children: [],
+        parentId: linksContainerId,
+        content: "Home",
+      },
+      // Link 2
+      {
+        id: link2Id,
+        type: "a",
+        style: {
+          color: "#0d6efd",
+          textDecoration: "none",
+          fontSize: "16px",
+        },
+        children: [],
+        parentId: linksContainerId,
+        content: "About",
+      },
+      // Link 3
+      {
+        id: link3Id,
+        type: "a",
+        style: {
+          color: "#0d6efd",
+          textDecoration: "none",
+          fontSize: "16px",
+        },
+        children: [],
+        parentId: linksContainerId,
+        content: "Contact",
       },
     ],
     selectedElementId: null,
@@ -73,16 +168,74 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     addElement: (type: ElementType, parentId?: string) => {
       const effectiveParentId = parentId || get().rootElementId;
 
+      // Generate content based on element type
+      let elementContent: string | undefined;
+
+      if (type === "div") {
+        // Count existing divs (excluding the root div) to generate the next number
+        const existingDivs = get().elements.filter(
+          (el) => el.type === "div" && el.id !== get().rootElementId
+        ).length;
+        const nextDivNumber = existingDivs + 1;
+        elementContent = `Div ${nextDivNumber}`;
+      } else if (type === "section") {
+        const existingSections = get().elements.filter(
+          (el) => el.type === "section"
+        ).length;
+        const nextSectionNumber = existingSections + 1;
+        elementContent = `Section ${nextSectionNumber}`;
+      } else if (type === "span") {
+        const existingSpans = get().elements.filter(
+          (el) => el.type === "span"
+        ).length;
+        const nextSpanNumber = existingSpans + 1;
+        elementContent = `Span ${nextSpanNumber}`;
+      } else if (type === "button") {
+        const existingButtons = get().elements.filter(
+          (el) => el.type === "button"
+        ).length;
+        const nextButtonNumber = existingButtons + 1;
+        elementContent = `Button ${nextButtonNumber}`;
+      } else if (type === "a") {
+        const existingLinks = get().elements.filter(
+          (el) => el.type === "a"
+        ).length;
+        const nextLinkNumber = existingLinks + 1;
+        elementContent = `Link ${nextLinkNumber}`;
+      } else if (type === "img") {
+        const existingImages = get().elements.filter(
+          (el) => el.type === "img"
+        ).length;
+        const nextImageNumber = existingImages + 1;
+        elementContent = `Image ${nextImageNumber}`;
+      } else if (type === "ul" || type === "ol") {
+        const existingLists = get().elements.filter(
+          (el) => el.type === "ul" || el.type === "ol"
+        ).length;
+        const nextListNumber = existingLists + 1;
+        elementContent = `List ${nextListNumber}`;
+      } else if (type === "li") {
+        const existingItems = get().elements.filter(
+          (el) => el.type === "li"
+        ).length;
+        const nextItemNumber = existingItems + 1;
+        elementContent = `Item ${nextItemNumber}`;
+      } else if (
+        type === "p" ||
+        type === "h1" ||
+        type === "h2" ||
+        type === "h3"
+      ) {
+        elementContent = "Double click to edit text";
+      }
+
       const newElement: PageElementRef = {
         id: uuidv4(),
         type,
         style: { ...defaultStyles },
         children: [],
         parentId: effectiveParentId,
-        content:
-          type === "p" || type === "h1" || type === "h2" || type === "h3"
-            ? "Double click to edit text"
-            : undefined,
+        content: elementContent,
       };
 
       console.log("Adding new element:", newElement);
@@ -143,6 +296,22 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
         elements: state.elements.map((el) =>
           el.id === id ? { ...el, content } : el
         ),
+      }));
+    },
+
+    updateElementName: (id, name) => {
+      set((state) => ({
+        elements: state.elements.map((el) => {
+          if (el.id === id) {
+            // Eğer grup ise hem groupName hem de content'i güncelle
+            if (el.isGroup) {
+              return { ...el, groupName: name, content: name };
+            } else {
+              return { ...el, content: name };
+            }
+          }
+          return el;
+        }),
       }));
     },
 
@@ -212,6 +381,11 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
         const parentId = firstElement.parentId;
         if (!parentId) return state;
 
+        // Find the next group number
+        const existingGroups = state.elements.filter((el) => el.isGroup).length;
+        const nextGroupNumber = existingGroups + 1;
+        const groupName = `Group ${nextGroupNumber}`;
+
         const groupId = uuidv4();
         const groupElement: PageElementRef = {
           id: groupId,
@@ -220,14 +394,13 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
             ...defaultStyles,
             display: "flex",
             flexDirection: "row",
-            padding: "8px",
-            border: "1px dashed #1890ff",
-            borderRadius: "4px",
-            background: "rgba(24, 144, 255, 0.05)",
+            padding: "4px",
           },
           children: elementIds,
           parentId,
           isGroup: true,
+          groupName: groupName,
+          content: groupName,
         };
 
         // Update the parent's children list
@@ -431,6 +604,7 @@ ul, ol {
             // For groups, preserve essential styles but remove editor-specific styling
             delete cleanStyle.border;
             delete cleanStyle.background; // Remove highlight background
+            delete cleanStyle.backgroundColor; // Also remove backgroundColor if present
           }
 
           // Remove positioning properties used only for editing

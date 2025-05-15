@@ -117,9 +117,26 @@ const LayersPanel: React.FC = () => {
 
     const isSelected = selectedElementId === element.id;
     const isMultiSelected = selectedElements.includes(element.id);
-    const elementContent = element.content ? `: ${element.content}` : "";
     const isGroup = element.isGroup;
     const icon = getElementIcon(element.type);
+
+    // Special display for root element
+    const displayName =
+      element.id === rootElementId
+        ? element.content || "Page Container"
+        : isGroup && element.groupName
+        ? element.groupName
+        : element.content &&
+          !["p", "h1", "h2", "h3", "h4", "h5", "h6"].includes(element.type)
+        ? element.content
+        : "";
+
+    // For text elements, show content preview
+    const contentPreview =
+      ["p", "h1", "h2", "h3", "h4", "h5", "h6"].includes(element.type) &&
+      element.content
+        ? `: ${element.content}`
+        : "";
 
     return (
       <div
@@ -132,14 +149,8 @@ const LayersPanel: React.FC = () => {
         <div
           style={{
             padding: "8px",
-            backgroundColor: isSelected
-              ? "#e6f7ff"
-              : isGroup
-              ? "#f0f7ff"
-              : "transparent",
+            backgroundColor: isSelected ? "#e6f7ff" : "transparent",
             border: isMultiSelected
-              ? "1px dashed #1890ff"
-              : isGroup
               ? "1px dashed #1890ff"
               : "1px solid transparent",
             marginBottom: "4px",
@@ -164,10 +175,10 @@ const LayersPanel: React.FC = () => {
             <span
               style={{
                 padding: "2px 6px",
-                backgroundColor: isGroup ? "#1890ff" : "#eee",
+                backgroundColor: "#eee",
                 borderRadius: "3px",
                 fontSize: "12px",
-                color: isGroup ? "white" : "#333",
+                color: "#333",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
@@ -175,47 +186,16 @@ const LayersPanel: React.FC = () => {
             >
               <span className="element-icon">{icon}</span>
             </span>
-            {isGroup && (
-              <span
-                style={{
-                  backgroundColor: "#1890ff",
-                  color: "white",
-                  padding: "2px 6px",
-                  borderRadius: "3px",
-                  fontSize: "12px",
-                }}
-              >
-                Group
-              </span>
+            {displayName && (
+              <span style={{ fontSize: "13px" }}>{displayName}</span>
             )}
             <span
               style={{ fontSize: "13px", color: "#666", fontStyle: "italic" }}
             >
-              {elementContent}
+              {contentPreview}
             </span>
           </div>
           <div style={{ display: "flex", gap: "4px" }}>
-            {isGroup && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Select the group to edit it
-                  selectElement(element.id);
-                }}
-                style={{
-                  background: "#1890ff",
-                  border: "none",
-                  color: "white",
-                  cursor: "pointer",
-                  padding: "2px 6px",
-                  borderRadius: "3px",
-                  fontSize: "12px",
-                  fontWeight: "bold",
-                }}
-              >
-                Select Group
-              </button>
-            )}
             {element.id !== rootElementId && (
               <button
                 onClick={(e) => {
@@ -244,8 +224,8 @@ const LayersPanel: React.FC = () => {
           <div
             style={{
               marginLeft: "10px",
-              borderLeft: isGroup ? "2px solid #1890ff" : "none",
-              paddingLeft: isGroup ? "8px" : "0",
+              borderLeft: "2px solid #e8e8e8",
+              paddingLeft: "8px",
             }}
           >
             {element.children.map((childId) =>

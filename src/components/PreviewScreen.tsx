@@ -11,6 +11,7 @@ interface PageElementTree {
   children: PageElementTree[];
   parentId: string | null;
   isGroup?: boolean;
+  groupName?: string;
 }
 
 const PreviewScreen: React.FC = () => {
@@ -40,7 +41,7 @@ const PreviewScreen: React.FC = () => {
   }
 
   const renderElement = (element: PageElementTree): React.ReactNode => {
-    const { id, type, content, style, children, isGroup } = element;
+    const { id, type, content, style, children, isGroup, groupName } = element;
 
     console.log(
       `Rendering element: ${id}, type: ${type}, children: ${children.length}`
@@ -54,16 +55,11 @@ const PreviewScreen: React.FC = () => {
       outline: isSelected ? "2px solid #1890ff" : "none",
       minHeight: children.length === 0 ? "20px" : undefined,
       minWidth: children.length === 0 ? "20px" : undefined,
-      padding: style.padding || (isGroup ? "8px" : "4px"),
+      padding: style.padding || "4px",
       boxSizing: "border-box" as const,
       position: "relative" as const,
-      background:
-        isGroup && isSelected ? "rgba(24, 144, 255, 0.05)" : style.background,
-      border: isGroup
-        ? isSelected
-          ? "1px dashed #1890ff"
-          : "none"
-        : style.border,
+      background: style.background,
+      border: isSelected ? "1px dashed #1890ff" : style.border,
     };
 
     // Add a visual indicator for groups - only when selected
@@ -83,7 +79,7 @@ const PreviewScreen: React.FC = () => {
             fontWeight: "bold",
           }}
         >
-          Group
+          {groupName || "Group"}
         </div>
       ) : null;
 

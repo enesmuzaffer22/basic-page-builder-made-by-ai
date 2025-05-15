@@ -141,6 +141,7 @@ const StyleEditor: React.FC = () => {
     selectedElementId,
     updateElementStyle,
     updateElementContent,
+    updateElementName,
   } = usePageBuilderStore();
 
   if (!selectedElementId) {
@@ -154,7 +155,7 @@ const StyleEditor: React.FC = () => {
   const selectedElement = elements.find((el) => el.id === selectedElementId);
   if (!selectedElement) return null;
 
-  const { type, style, content } = selectedElement;
+  const { type, style, content, isGroup, groupName } = selectedElement;
 
   const handleStyleChange = <T extends string | number>(
     property: keyof ElementStyle,
@@ -169,9 +170,32 @@ const StyleEditor: React.FC = () => {
     updateElementContent(selectedElementId, e.target.value);
   };
 
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    updateElementName(selectedElementId, e.target.value);
+  };
+
+  // Element için gösterilecek adı belirle
+  const displayName = isGroup ? groupName : content;
+
   return (
     <div className="style-editor-panel">
       <h3>Style Editor - {type}</h3>
+
+      {/* Element name editor for divs and groups */}
+      {(type === "div" || isGroup) && (
+        <div style={{ marginBottom: "16px" }}>
+          <label style={{ display: "block", marginBottom: "4px" }}>
+            Element Name
+          </label>
+          <input
+            type="text"
+            value={displayName || ""}
+            onChange={handleNameChange}
+            style={{ width: "100%", padding: "8px" }}
+            placeholder={isGroup ? "Group Name" : "Div Name"}
+          />
+        </div>
+      )}
 
       {/* Content editor for text elements */}
       {(type === "h1" ||
