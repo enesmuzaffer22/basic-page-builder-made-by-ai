@@ -1,76 +1,24 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    "react-x": reactX,
-    "react-dom": reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs["recommended-typescript"].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
-```
-
 # Basic Page Builder
 
-A flexible and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, it features a drag-and-drop interface and real-time preview.
+A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, it features an accessible interface and real-time preview for anyone who wants to design web pages.
 
 ## Features
 
-- Two-panel layout with layers panel and preview screen
-- Flex-based layout system
-- Add various HTML elements (headings, paragraphs, divs, etc.)
-- Group elements together
-- Style elements with a comprehensive style editor
-- Apply flex layout properties (direction, alignment, justification)
-- Real-time preview
-- Export HTML and CSS
+- **Two-Panel Interface**: Layers panel and preview screen
+- **Layers Panel**: View and organize your page elements hierarchically
+- **Preview Screen**: See your changes in real-time
+- **Style Editor**: Comprehensive customization options
+- **Flex-based Layout System**: Compatible with modern web design
+- **Element Adding**: Headings, paragraphs, divs, buttons, links, and more
+- **Element Grouping**: Combine elements and manage them as a group
+- **Naming**: Give custom names to any element or group
+- **Nesting**: Easily nest elements within each other
+- **Flex Properties**: Control direction, alignment, and distribution
+- **Export**: Export your HTML and CSS code
 
 ## Getting Started
 
-### Prerequisites
+### Requirements
 
 - Node.js (v14 or later)
 - npm or yarn
@@ -102,51 +50,73 @@ yarn dev
 
 ## How to Use
 
-1. **Add Elements**: Click on any element type in the layers panel to add it to your page.
+### Adding and Editing Elements
 
-2. **Select and Edit**: Click on an element in the preview screen or in the layers panel to select it and edit its properties.
+1. **Add Elements**: Click on the appropriate element type in the layers panel to add a new element.
+2. **Select Elements**: Click on an element in the preview screen or in the layers panel to select it.
+3. **Edit Content**: Use the style editor to change text content.
+4. **Delete Elements**: Click on the "Delete" button next to an element to remove it.
 
-3. **Group Elements**: Hold Ctrl/Cmd and click multiple elements, then click "Group Selected Elements" to group them.
+### Grouping and Editing
 
-4. **Style Elements**: Use the style editor to change properties like:
+1. **Group Elements**: Hold Ctrl/Cmd while clicking on elements to select multiple, then click the "Group Selected Elements" button.
+2. **Name Groups**: You can give custom names to groups and divs in the style editor.
+3. **Edit Group Content**: Groups behave like other elements and can be edited.
 
-   - Display type (flex, block, etc.)
-   - Flex properties (direction, justify-content, align-items)
-   - Box model (width, height, padding, margin)
-   - Visual properties (colors, fonts, borders)
+### Style Editing
 
-5. **Export**: Use the export panel to:
-   - Copy HTML or CSS to clipboard
-   - Download HTML file
-   - Download CSS file
-   - Download complete webpage (HTML with CSS)
+Use the style editor to change the following properties:
+
+- **Layout Type**: Flex, block, inline, etc.
+- **Flex Properties**: Direction, alignment, distribution, wrap
+- **Box Model**: Width, height, padding, margin
+- **Visual Properties**: Colors, fonts, borders
+- **Text Properties**: Font size, weight, alignment
+
+### Exporting
+
+You can export your projects in different formats:
+
+- HTML code
+- CSS code
+- Complete web page (HTML + CSS)
 
 ## Project Structure
 
 ```
 basic-page-builder/
 ├── src/
-│   ├── components/         # React components
-│   │   ├── LayersPanel.tsx   # Left sidebar with element tree
-│   │   ├── PreviewScreen.tsx # Right side preview
-│   │   ├── StyleEditor.tsx   # Element styling controls
-│   │   └── ExportPanel.tsx   # Export controls
-│   ├── store/              # State management
-│   │   └── pageBuilderStore.ts  # Zustand store
-│   ├── types/              # TypeScript definitions
-│   │   └── index.ts        # Type definitions
-│   ├── App.tsx             # Main application component
-│   └── main.tsx            # Application entry point
-└── public/                 # Static assets
+│   ├── components/            # React components
+│   │   ├── LayersPanel.tsx    # Layers panel
+│   │   ├── PreviewScreen.tsx  # Preview screen
+│   │   ├── StyleEditor.tsx    # Style editor
+│   │   └── ExportPanel.tsx    # Export panel
+│   ├── store/                 # State management
+│   │   └── pageBuilderStore.ts # Zustand store
+│   ├── types/                 # TypeScript definitions
+│   │   └── index.ts           # Type definitions
+│   ├── App.tsx                # Main application component
+│   └── main.tsx               # Application entry point
+└── public/                    # Static assets
 ```
+
+## Technologies Used
+
+- [React 19](https://react.dev/) - User interface
+- [TypeScript](https://www.typescriptlang.org/) - Type safety
+- [Zustand](https://github.com/pmndrs/zustand) - State management
+- [React Icons](https://react-icons.github.io/react-icons/) - Icons
+- [UUID](https://github.com/uuidjs/uuid) - Unique ID generation
+- [Vite](https://vitejs.dev/) - Development tool
+
+## Developer Notes
+
+This project is designed to allow users without web development skills to easily create web pages. Currently, basic features are available, and more element types, customization options, and template support will be added in the future.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
-## Acknowledgements
+---
 
-- [React](https://react.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Zustand](https://github.com/pmndrs/zustand) - State management
-- [Vite](https://vitejs.dev/) - Build tool
+© 2024 Basic Page Builder
