@@ -56,6 +56,12 @@ const getElementLabel = (type: ElementType): string => {
   return type;
 };
 
+// Metin kısaltma yardımcı fonksiyonu
+const truncateText = (text: string, maxLength: number = 25) => {
+  if (!text) return "";
+  return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+};
+
 const LayersPanel: React.FC = () => {
   // Use individual selectors for better performance
   const elements = usePageBuilderStore((state) => state.elements);
@@ -138,6 +144,10 @@ const LayersPanel: React.FC = () => {
         ? `: ${element.content}`
         : "";
 
+    // Başlıkları kısalt
+    const truncatedDisplayName = truncateText(displayName);
+    const truncatedContentPreview = truncateText(contentPreview, 20);
+
     return (
       <div
         key={element.id}
@@ -159,6 +169,7 @@ const LayersPanel: React.FC = () => {
             alignItems: "center",
             cursor: "pointer",
             borderRadius: "4px",
+            minWidth: "250px",
           }}
           onClick={(e) =>
             handleElementSelect(element.id, e.ctrlKey || e.metaKey)
@@ -170,6 +181,7 @@ const LayersPanel: React.FC = () => {
               display: "flex",
               alignItems: "center",
               gap: "4px",
+              flexGrow: 1,
             }}
           >
             <span
@@ -182,20 +194,41 @@ const LayersPanel: React.FC = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
+                flexShrink: 0,
               }}
             >
               <span className="element-icon">{icon}</span>
             </span>
-            {displayName && (
-              <span style={{ fontSize: "13px" }}>{displayName}</span>
+            {truncatedDisplayName && (
+              <span
+                style={{
+                  fontSize: "13px",
+                  flexShrink: 0,
+                }}
+                title={displayName}
+              >
+                {truncatedDisplayName}
+              </span>
             )}
             <span
-              style={{ fontSize: "13px", color: "#666", fontStyle: "italic" }}
+              style={{
+                fontSize: "13px",
+                color: "#666",
+                fontStyle: "italic",
+                flexGrow: 1,
+              }}
+              title={contentPreview}
             >
-              {contentPreview}
+              {truncatedContentPreview}
             </span>
           </div>
-          <div style={{ display: "flex", gap: "4px" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "4px",
+              flexShrink: 0,
+            }}
+          >
             {element.id !== rootElementId && (
               <button
                 onClick={(e) => {
@@ -248,6 +281,7 @@ const LayersPanel: React.FC = () => {
         padding: "16px",
         background: "#f5f5f5",
         overflowY: "auto",
+        overflowX: "auto", // Yatay kaydırma çubuğu ekle
       }}
     >
       <h2>Layers</h2>
@@ -269,7 +303,7 @@ const LayersPanel: React.FC = () => {
         </button>
       )}
 
-      <div style={{ flex: 1, overflowY: "auto" }}>
+      <div style={{ flex: 1, overflowY: "auto", overflowX: "auto" }}>
         <h3>Structure</h3>
         {renderElementTree(rootElementId)}
       </div>
