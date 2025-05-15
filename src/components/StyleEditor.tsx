@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { usePageBuilderStore } from "../store/pageBuilderStore";
 import type {
   ElementStyle,
@@ -7,6 +7,133 @@ import type {
   AlignItems,
   FlexWrap,
 } from "../types";
+
+// CSS Units for measurement inputs
+const CSS_UNITS = ["px", "rem", "em", "%", "vw", "vh", ""];
+
+// Helper function to parse CSS value and unit
+const parseCssValue = (
+  cssValue: string | undefined
+): { value: string; unit: string } => {
+  if (!cssValue) return { value: "", unit: "px" };
+
+  // Check for complex values (multiple values separated by spaces)
+  if (cssValue.includes(" ")) {
+    // For now, return the whole string without unit separation
+    return { value: cssValue, unit: "" };
+  }
+
+  // Match any number followed by a unit
+  const match = cssValue.match(/^(-?\d*\.?\d*)([a-z%]*)$/);
+
+  if (match) {
+    const [, value, unit = "px"] = match;
+    return { value, unit };
+  }
+
+  // If it's just a number, return with default unit px
+  if (!isNaN(Number(cssValue))) {
+    return { value: cssValue, unit: "px" };
+  }
+
+  // For invalid formats, try to extract just the numeric part if possible
+  const numericMatch = cssValue.match(/(-?\d*\.?\d*)/);
+  if (numericMatch && numericMatch[1]) {
+    return { value: numericMatch[1], unit: "px" };
+  }
+
+  // For complex values or invalid formats, return as is with empty unit
+  return { value: cssValue, unit: "" };
+};
+
+// CSS Measurement Input Component
+interface MeasurementInputProps {
+  value: string | undefined;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  supportMultipleValues?: boolean;
+}
+
+const MeasurementInput: React.FC<MeasurementInputProps> = ({
+  value,
+  onChange,
+  placeholder,
+  supportMultipleValues = false,
+}) => {
+  // Parse the CSS value to extract number and unit
+  const parsed = parseCssValue(value);
+
+  // Use state to remember the selected unit even when value is empty
+  const [selectedUnit, setSelectedUnit] = useState(parsed.unit);
+
+  // For properties that support multiple values (like margin, padding)
+  if (supportMultipleValues && value && value.includes(" ")) {
+    return (
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder || "e.g. 10px 20px 15px"}
+        style={{ width: "100%", padding: "8px" }}
+      />
+    );
+  }
+
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // Allow only numeric values and decimal point
+    if (newValue !== "" && !/^-?\d*\.?\d*$/.test(newValue)) {
+      return;
+    }
+
+    // When input is empty, just set an empty value without unit
+    if (!newValue) {
+      onChange("");
+      return;
+    }
+
+    // Keep the user's selected unit when changing the value
+    onChange(`${newValue}${selectedUnit}`);
+  };
+
+  const handleUnitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newUnit = e.target.value;
+    // Remember the selected unit
+    setSelectedUnit(newUnit);
+
+    // Don't add unit if there's no value
+    if (!parsed.value) {
+      return;
+    }
+
+    // Apply the new unit to the current value
+    onChange(`${parsed.value}${newUnit}`);
+  };
+
+  return (
+    <div style={{ display: "flex", gap: "4px" }}>
+      <input
+        type="text"
+        value={parsed.value}
+        onChange={handleValueChange}
+        placeholder={placeholder || "Value"}
+        style={{ flex: 1, padding: "8px" }}
+      />
+      <select
+        value={selectedUnit}
+        onChange={handleUnitChange}
+        style={{ width: "70px", padding: "8px" }}
+      >
+        {CSS_UNITS.map((u) => (
+          <option key={u || "empty-unit"} value={u}>
+            {u || "none"}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
 
 const StyleEditor: React.FC = () => {
   const {
@@ -171,12 +298,10 @@ const StyleEditor: React.FC = () => {
               <label style={{ display: "block", marginBottom: "4px" }}>
                 Gap
               </label>
-              <input
-                type="text"
-                value={style.gap || "0px"}
-                onChange={(e) => handleStyleChange("gap", e.target.value)}
-                placeholder="e.g. 10px"
-                style={{ width: "100%", padding: "8px" }}
+              <MeasurementInput
+                value={style.gap}
+                onChange={(value) => handleStyleChange("gap", value)}
+                placeholder="Gap value"
               />
             </div>
           </>
@@ -189,12 +314,10 @@ const StyleEditor: React.FC = () => {
 
         <div style={{ marginBottom: "8px" }}>
           <label style={{ display: "block", marginBottom: "4px" }}>Width</label>
-          <input
-            type="text"
-            value={style.width || ""}
-            onChange={(e) => handleStyleChange("width", e.target.value)}
-            placeholder="e.g. 100%, 200px"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.width}
+            onChange={(value) => handleStyleChange("width", value)}
+            placeholder="Width value"
           />
         </div>
 
@@ -202,12 +325,10 @@ const StyleEditor: React.FC = () => {
           <label style={{ display: "block", marginBottom: "4px" }}>
             Height
           </label>
-          <input
-            type="text"
-            value={style.height || ""}
-            onChange={(e) => handleStyleChange("height", e.target.value)}
-            placeholder="e.g. 100%, 200px"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.height}
+            onChange={(value) => handleStyleChange("height", value)}
+            placeholder="Height value"
           />
         </div>
 
@@ -215,12 +336,11 @@ const StyleEditor: React.FC = () => {
           <label style={{ display: "block", marginBottom: "4px" }}>
             Padding
           </label>
-          <input
-            type="text"
-            value={style.padding || ""}
-            onChange={(e) => handleStyleChange("padding", e.target.value)}
-            placeholder="e.g. 10px, 10px 20px"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.padding}
+            onChange={(value) => handleStyleChange("padding", value)}
+            placeholder="Padding value"
+            supportMultipleValues={true}
           />
         </div>
 
@@ -228,12 +348,11 @@ const StyleEditor: React.FC = () => {
           <label style={{ display: "block", marginBottom: "4px" }}>
             Margin
           </label>
-          <input
-            type="text"
-            value={style.margin || ""}
-            onChange={(e) => handleStyleChange("margin", e.target.value)}
-            placeholder="e.g. 10px, 10px 20px"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.margin}
+            onChange={(value) => handleStyleChange("margin", value)}
+            placeholder="Margin value"
+            supportMultipleValues={true}
           />
         </div>
       </div>
@@ -272,12 +391,10 @@ const StyleEditor: React.FC = () => {
           <label style={{ display: "block", marginBottom: "4px" }}>
             Font Size
           </label>
-          <input
-            type="text"
-            value={style.fontSize || ""}
-            onChange={(e) => handleStyleChange("fontSize", e.target.value)}
-            placeholder="e.g. 16px, 1.2rem"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.fontSize}
+            onChange={(value) => handleStyleChange("fontSize", value)}
+            placeholder="Font size value"
           />
         </div>
 
@@ -344,12 +461,10 @@ const StyleEditor: React.FC = () => {
           <label style={{ display: "block", marginBottom: "4px" }}>
             Border Radius
           </label>
-          <input
-            type="text"
-            value={style.borderRadius || ""}
-            onChange={(e) => handleStyleChange("borderRadius", e.target.value)}
-            placeholder="e.g. 4px, 50%"
-            style={{ width: "100%", padding: "8px" }}
+          <MeasurementInput
+            value={style.borderRadius}
+            onChange={(value) => handleStyleChange("borderRadius", value)}
+            placeholder="Border radius value"
           />
         </div>
       </div>
