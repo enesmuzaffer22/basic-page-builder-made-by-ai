@@ -52,6 +52,9 @@ export interface ElementStyle {
   textAlign?: "left" | "center" | "right" | "justify";
   border?: string;
   borderRadius?: string;
+  outline?: string; // Editor özel stili
+  boxSizing?: "border-box" | "content-box";
+  position?: "relative" | "absolute" | "fixed" | "sticky";
 }
 
 export interface PageElement {

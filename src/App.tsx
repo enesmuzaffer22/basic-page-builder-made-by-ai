@@ -14,11 +14,11 @@ function App() {
 
       <main className="app-main">
         <LayersPanel />
-        <div className="app-right-panel">
+        <div className="app-right-panel" style={{ paddingRight: "300px" }}>
           <PreviewScreen />
-          <StyleEditor />
           <ExportPanel />
         </div>
+        <StyleEditor />
       </main>
     </div>
   );

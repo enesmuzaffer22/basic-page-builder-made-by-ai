@@ -1,27 +1,59 @@
 import React, { useState, useEffect } from "react";
 import type { ElementType } from "../types";
 import { usePageBuilderStore } from "../store/pageBuilderStore";
+import {
+  FaBox,
+  FaHeading,
+  FaParagraph,
+  FaLink,
+  FaImage,
+  FaList,
+  FaListOl,
+  FaListUl,
+  FaCode,
+  FaFont,
+  FaRegSquare,
+  FaSquareCheck,
+} from "react-icons/fa6";
 
-const AVAILABLE_ELEMENTS: { type: ElementType; label: string }[] = [
-  { type: "div", label: "Container (div)" },
-  { type: "h1", label: "Heading 1" },
-  { type: "h2", label: "Heading 2" },
-  { type: "h3", label: "Heading 3" },
-  { type: "p", label: "Paragraph" },
-  { type: "a", label: "Link" },
-  { type: "button", label: "Button" },
-  { type: "img", label: "Image" },
-  { type: "ul", label: "Unordered List" },
-  { type: "ol", label: "Ordered List" },
-  { type: "li", label: "List Item" },
-  { type: "span", label: "Span" },
-  { type: "section", label: "Section" },
-];
+// Function to get icon for element type
+const getElementIcon = (type: ElementType) => {
+  switch (type) {
+    case "div":
+      return <FaBox />;
+    case "h1":
+    case "h2":
+    case "h3":
+    case "h4":
+    case "h5":
+    case "h6":
+      return <FaHeading />;
+    case "p":
+      return <FaParagraph />;
+    case "a":
+      return <FaLink />;
+    case "img":
+      return <FaImage />;
+    case "ul":
+      return <FaListUl />;
+    case "ol":
+      return <FaListOl />;
+    case "li":
+      return <FaList />;
+    case "button":
+      return <FaSquareCheck />;
+    case "span":
+      return <FaFont />;
+    case "section":
+      return <FaRegSquare />;
+    default:
+      return <FaCode />;
+  }
+};
 
-// Helper function to get a readable label for an element type
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getElementLabel = (type: ElementType): string => {
-  const element = AVAILABLE_ELEMENTS.find((el) => el.type === type);
-  return element ? element.label : type;
+  return type;
 };
 
 const LayersPanel: React.FC = () => {
@@ -31,7 +63,6 @@ const LayersPanel: React.FC = () => {
     (state) => state.selectedElementId
   );
   const rootElementId = usePageBuilderStore((state) => state.rootElementId);
-  const addElement = usePageBuilderStore((state) => state.addElement);
   const selectElement = usePageBuilderStore((state) => state.selectElement);
   const deleteElement = usePageBuilderStore((state) => state.deleteElement);
   const groupElements = usePageBuilderStore((state) => state.groupElements);
@@ -50,15 +81,6 @@ const LayersPanel: React.FC = () => {
     console.error("Root element not found");
     return <div>Error: Root element not found</div>;
   }
-
-  const handleAddElement = (type: ElementType) => {
-    console.log(
-      `Adding element of type: ${type}, to parent: ${
-        selectedElementId || rootElementId
-      }`
-    );
-    addElement(type, selectedElementId || rootElementId);
-  };
 
   const handleElementSelect = (id: string, multiSelect: boolean) => {
     console.log(`Selecting element: ${id}, multiSelect: ${multiSelect}`);
@@ -95,9 +117,9 @@ const LayersPanel: React.FC = () => {
 
     const isSelected = selectedElementId === element.id;
     const isMultiSelected = selectedElements.includes(element.id);
-    const elementLabel = getElementLabel(element.type);
     const elementContent = element.content ? `: ${element.content}` : "";
     const isGroup = element.isGroup;
+    const icon = getElementIcon(element.type);
 
     return (
       <div
@@ -146,9 +168,12 @@ const LayersPanel: React.FC = () => {
                 borderRadius: "3px",
                 fontSize: "12px",
                 color: isGroup ? "white" : "#333",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
               }}
             >
-              {elementLabel}
+              <span className="element-icon">{icon}</span>
             </span>
             {isGroup && (
               <span
@@ -246,34 +271,6 @@ const LayersPanel: React.FC = () => {
       }}
     >
       <h2>Layers</h2>
-
-      <div style={{ marginBottom: "16px" }}>
-        <h3>Add Element</h3>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-          {AVAILABLE_ELEMENTS.map(({ type, label }) => (
-            <button
-              key={type}
-              onClick={() => handleAddElement(type)}
-              style={{
-                padding: "6px 12px",
-                background: "#fff",
-                border: "1px solid #ddd",
-                borderRadius: "4px",
-                cursor: "pointer",
-                margin: "3px",
-                color: "#333",
-                fontSize: "13px",
-                minWidth: "120px",
-                textAlign: "center",
-                fontWeight: "bold",
-                display: "block",
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {selectedElements.length >= 2 && (
         <button

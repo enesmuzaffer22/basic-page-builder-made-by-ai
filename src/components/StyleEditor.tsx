@@ -18,13 +18,7 @@ const StyleEditor: React.FC = () => {
 
   if (!selectedElementId) {
     return (
-      <div
-        style={{
-          padding: "16px",
-          background: "#f5f5f5",
-          borderTop: "1px solid #ddd",
-        }}
-      >
+      <div className="style-editor-panel">
         <p>Select an element to edit its style</p>
       </div>
     );
@@ -49,15 +43,7 @@ const StyleEditor: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        padding: "16px",
-        background: "#f5f5f5",
-        borderTop: "1px solid #ddd",
-        overflowY: "auto",
-        maxHeight: "30vh",
-      }}
-    >
+    <div className="style-editor-panel">
       <h3>Style Editor - {type}</h3>
 
       {/* Content editor for text elements */}

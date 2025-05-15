@@ -317,12 +317,44 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
 
         const childrenHTML = children.map(generateElementHTML).join("");
 
+        // Use a clean class name
         const styleClass = `element-${id}`;
 
-        if (content) {
-          return `<${type} class="${styleClass}">${content}${childrenHTML}</${type}>`;
+        // Clean and prepare content
+        const cleanContent = content
+          ? content.replace("Double click to edit text", "")
+          : "";
+        const displayContent =
+          cleanContent ||
+          (type === "p"
+            ? "Paragraph text"
+            : type.startsWith("h")
+            ? `${type.toUpperCase()} Heading`
+            : type === "a"
+            ? "Link text"
+            : type === "button"
+            ? "Button"
+            : "");
+
+        // For text content elements
+        if (
+          [
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+            "p",
+            "span",
+            "a",
+            "button",
+          ].includes(type)
+        ) {
+          return `<${type} class="${styleClass}">${displayContent}${childrenHTML}</${type}>`;
         }
 
+        // For container elements - no special treatment for groups in exported HTML
         return `<${type} class="${styleClass}">${childrenHTML}</${type}>`;
       };
 
@@ -332,9 +364,111 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     generateCSS: () => {
       const { elements } = get();
 
-      return elements
+      // Create a base CSS with default font styles
+      const baseCSS = `
+/* Base styles for consistent text rendering */
+body {
+  font-family: 'Arial', sans-serif;
+  line-height: 1.5;
+  color: #333;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  font-size: 1.75rem;
+  margin-bottom: 0.875rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+p {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+a {
+  color: #1890ff;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: #1890ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+ul, ol {
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+}
+`;
+
+      // Generate element-specific CSS
+      const elementCSS = elements
         .map((el) => {
-          const styleProperties = Object.entries(el.style)
+          // Filter out editor-specific styles (outline, border for groups, etc.) that should not appear in exported code
+          const cleanStyle = { ...el.style };
+
+          // Don't include editor styling in export
+          delete cleanStyle.outline; // Remove outline for all elements
+
+          if (el.isGroup) {
+            // For groups, preserve essential styles but remove editor-specific styling
+            delete cleanStyle.border;
+            delete cleanStyle.background; // Remove highlight background
+          }
+
+          // Remove positioning properties used only for editing
+          delete cleanStyle.position;
+          delete cleanStyle.boxSizing;
+
+          // Ensure font sizing is consistent for text elements
+          if (el.type === "p" && !cleanStyle.fontSize) {
+            cleanStyle.fontSize = "1rem";
+          }
+
+          if (
+            ["h1", "h2", "h3", "h4", "h5", "h6"].includes(el.type) &&
+            !cleanStyle.fontSize
+          ) {
+            switch (el.type) {
+              case "h1":
+                cleanStyle.fontSize = "2rem";
+                break;
+              case "h2":
+                cleanStyle.fontSize = "1.75rem";
+                break;
+              case "h3":
+                cleanStyle.fontSize = "1.5rem";
+                break;
+              case "h4":
+                cleanStyle.fontSize = "1.25rem";
+                break;
+              case "h5":
+                cleanStyle.fontSize = "1.1rem";
+                break;
+              case "h6":
+                cleanStyle.fontSize = "1rem";
+                break;
+            }
+          }
+
+          const styleProperties = Object.entries(cleanStyle)
             .filter(([, value]) => value !== undefined)
             .map(([key, value]) => {
               // Convert camelCase to kebab-case
@@ -346,6 +480,8 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
           return `.element-${el.id} {\n  ${styleProperties}\n}`;
         })
         .join("\n\n");
+
+      return baseCSS + "\n\n" + elementCSS;
     },
   };
 });
