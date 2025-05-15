@@ -2,6 +2,15 @@
 
 A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, it features an accessible interface and real-time preview for anyone who wants to design web pages.
 
+## AI Development
+
+This project was developed with the assistance of artificial intelligence:
+
+- **AI Tool**: Cursor Agent
+- **AI Model**: Claude 3.7 Sonnet by Anthropic
+
+The AI assistance was used to help design the architecture, implement features, and debug the application while following modern React and TypeScript best practices.
+
 ## Features
 
 - **Two-Panel Interface**: Layers panel and preview screen
