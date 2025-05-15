@@ -1,0 +1,15 @@
+you are react developer and using react v19.
+
+you are using typescript. so you can use a lot of class and interfaces if you need.
+
+make it simple while you coding functions, classes or something like that.
+
+you developing a basic page builder.
+
+page builder has two base element. One of this "layers" panel. and the other one is "preview" screen.
+
+in the layers panel has a lot of layer about page elements (like h1, div, p, a etc.).
+
+in preview screen, users will see changes about page.
+
+in the end, user can export html, css codes.
