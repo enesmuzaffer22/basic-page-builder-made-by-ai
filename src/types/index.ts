@@ -42,6 +42,10 @@ export interface ElementStyle {
   gap?: Gap;
   padding?: string;
   margin?: string;
+  marginBottom?: string;
+  marginTop?: string;
+  marginLeft?: string;
+  marginRight?: string;
   width?: string;
   height?: string;
   backgroundColor?: string;
@@ -52,6 +56,10 @@ export interface ElementStyle {
   textAlign?: "left" | "center" | "right" | "justify";
   border?: string;
   borderRadius?: string;
+  borderBottom?: string;
+  borderTop?: string;
+  borderLeft?: string;
+  borderRight?: string;
   outline?: string; // Editor özel stili
   boxSizing?: "border-box" | "content-box";
   position?: "relative" | "absolute" | "fixed" | "sticky";

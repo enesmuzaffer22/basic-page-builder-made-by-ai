@@ -540,10 +540,21 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
       // Create a base CSS with default font styles
       const baseCSS = `
 /* Base styles for consistent text rendering */
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Arial', sans-serif;
   line-height: 1.5;
   color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.page-container {
+  width: 100%;
+  max-width: none !important;
 }
 
 h1 {
@@ -602,7 +613,11 @@ ul, ol {
 
           if (el.isGroup) {
             // For groups, preserve essential styles but remove editor-specific styling
-            delete cleanStyle.border;
+            delete cleanStyle.border; // Remove border for groups
+            delete cleanStyle.borderBottom; // Remove individual border properties for groups
+            delete cleanStyle.borderTop;
+            delete cleanStyle.borderLeft;
+            delete cleanStyle.borderRight;
             delete cleanStyle.background; // Remove highlight background
             delete cleanStyle.backgroundColor; // Also remove backgroundColor if present
           }
@@ -640,6 +655,20 @@ ul, ol {
                 cleanStyle.fontSize = "1rem";
                 break;
             }
+          }
+
+          // Add default margin for navbar and other container elements if not set
+          if (
+            el.type === "div" &&
+            el.content === "Navbar" &&
+            !cleanStyle.marginBottom
+          ) {
+            cleanStyle.marginBottom = "1rem";
+          }
+
+          // Ensure all flex containers have proper display settings
+          if (cleanStyle.flexDirection && !cleanStyle.display) {
+            cleanStyle.display = "flex";
           }
 
           const styleProperties = Object.entries(cleanStyle)

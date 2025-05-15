@@ -2,6 +2,13 @@ import React, { useMemo, useEffect } from "react";
 import { usePageBuilderStore } from "../store/pageBuilderStore";
 import type { ElementStyle, ElementType } from "../types";
 
+// Global styles for preview to match exported result
+const previewStyles = {
+  allElements: {
+    boxSizing: "border-box" as const,
+  },
+};
+
 // This interface reflects the same structure as PageElementTree in the store
 interface PageElementTree {
   id: string;
@@ -51,14 +58,15 @@ const PreviewScreen: React.FC = () => {
 
     // Apply special styling for groups - only show distinct group styling when selected
     const elementStyle = {
+      ...previewStyles.allElements,
       ...style,
       outline: isSelected ? "2px solid #1890ff" : "none",
       minHeight: children.length === 0 ? "20px" : undefined,
       minWidth: children.length === 0 ? "20px" : undefined,
       padding: style.padding || "4px",
-      boxSizing: "border-box" as const,
       position: "relative" as const,
-      background: style.background,
+      background: style.background || style.backgroundColor,
+      backgroundColor: style.backgroundColor,
       border: isSelected ? "1px dashed #1890ff" : style.border,
     };
 
@@ -96,6 +104,22 @@ const PreviewScreen: React.FC = () => {
       },
     };
 
+    // Clean and prepare content similar to export function
+    const cleanContent = content
+      ? content.replace("Double click to edit text", "")
+      : "";
+    const displayContent =
+      cleanContent ||
+      (type === "p"
+        ? "Paragraph text"
+        : type.startsWith("h")
+        ? `${type.toUpperCase()} Heading`
+        : type === "a"
+        ? "Link text"
+        : type === "button"
+        ? "Button"
+        : "");
+
     // Render the appropriate element based on type
     switch (type) {
       case "div":
@@ -116,14 +140,14 @@ const PreviewScreen: React.FC = () => {
       case "button":
         return React.createElement(type, elementProps, [
           groupLabel,
-          content || `${type} Element`,
+          displayContent,
         ]);
 
       case "a":
         return React.createElement(
           "a",
           { ...elementProps, href: "#", target: "_blank" },
-          [groupLabel, content || "Link"]
+          [groupLabel, displayContent]
         );
 
       case "img":
@@ -149,7 +173,7 @@ const PreviewScreen: React.FC = () => {
       case "li":
         return React.createElement(type, elementProps, [
           groupLabel,
-          content || "List item",
+          displayContent || "List item",
         ]);
 
       default:
@@ -166,6 +190,7 @@ const PreviewScreen: React.FC = () => {
         background: "#fff",
         overflow: "auto",
         boxShadow: "inset 0 0 10px rgba(0, 0, 0, 0.05)",
+        ...previewStyles.allElements,
       }}
     >
       <div
@@ -173,8 +198,8 @@ const PreviewScreen: React.FC = () => {
           width: "100%",
           height: "100%",
           border: "1px dashed #ddd",
-          boxSizing: "border-box",
           position: "relative",
+          ...previewStyles.allElements,
         }}
       >
         {renderElement(elementTree)}

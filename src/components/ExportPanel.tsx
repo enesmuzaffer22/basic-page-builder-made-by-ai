@@ -101,7 +101,7 @@ ${css}
   </style>
 </head>
 <body>
-  <div class="page-container" style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+  <div class="page-container" style="width: 100%; margin: 0 auto; padding: 0;">
     ${html}
   </div>
 </body>
