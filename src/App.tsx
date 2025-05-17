@@ -1,4 +1,3 @@
-import React from "react";
 import "./App.css";
 import LayersPanel from "./components/LayersPanel";
 import PreviewScreen from "./components/PreviewScreen";

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { ElementType } from "../types";
+import type { KeyboardEvent, MouseEvent } from "react";
 import { usePageBuilderStore } from "../store/pageBuilderStore";
 import {
   FaBox,
@@ -51,11 +52,6 @@ const getElementIcon = (type: ElementType) => {
   }
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const getElementLabel = (type: ElementType): string => {
-  return type;
-};
-
 // Metin kısaltma yardımcı fonksiyonu
 const truncateText = (text: string, maxLength: number = 25) => {
   if (!text) return "";
@@ -74,6 +70,15 @@ const LayersPanel: React.FC = () => {
   const groupElements = usePageBuilderStore((state) => state.groupElements);
 
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
+  const [contextMenu, setContextMenu] = useState<{
+    visible: boolean;
+    x: number;
+    y: number;
+    elementId: string;
+  }>({ visible: false, x: 0, y: 0, elementId: "" });
+
+  // Reference to the layers panel
+  const layersPanelRef = useRef<HTMLDivElement>(null);
 
   // Debug info
   useEffect(() => {
@@ -81,6 +86,18 @@ const LayersPanel: React.FC = () => {
     console.log("Root element ID:", rootElementId);
     console.log("Selected element ID:", selectedElementId);
   }, [elements, rootElementId, selectedElementId]);
+
+  // Close context menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setContextMenu((prev) => ({ ...prev, visible: false }));
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   const rootElement = elements.find((el) => el.id === rootElementId);
   if (!rootElement) {
@@ -110,6 +127,31 @@ const LayersPanel: React.FC = () => {
       groupElements(selectedElements);
       setSelectedElements([]);
     }
+  };
+
+  // Handle keyboard events for deleting elements
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (
+      e.key === "Delete" &&
+      selectedElementId &&
+      selectedElementId !== rootElementId
+    ) {
+      console.log(`Deleting element with keyboard: ${selectedElementId}`);
+      deleteElement(selectedElementId);
+    }
+  };
+
+  // Handle context menu
+  const handleContextMenu = (e: MouseEvent, elementId: string) => {
+    if (elementId === rootElementId) return; // Don't show context menu for root element
+
+    e.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+      elementId: elementId,
+    });
   };
 
   const renderElementTree = (elementId: string, depth = 0) => {
@@ -148,53 +190,61 @@ const LayersPanel: React.FC = () => {
     const truncatedDisplayName = truncateText(displayName);
     const truncatedContentPreview = truncateText(contentPreview, 20);
 
+    // Calculate consistent indentation
+    const INDENT_WIDTH = 16; // Fixed indentation width for all levels
+
     return (
       <div
         key={element.id}
         style={{
-          marginLeft: `${depth * 20}px`,
+          marginLeft: depth === 0 ? 0 : `${INDENT_WIDTH}px`, // No margin for root, fixed width for all others
           marginBottom: "4px",
         }}
       >
         <div
           style={{
-            padding: "8px",
+            padding: "4px 8px",
             backgroundColor: isSelected ? "#e6f7ff" : "transparent",
             border: isMultiSelected
               ? "1px dashed #1890ff"
               : "1px solid transparent",
-            marginBottom: "4px",
+            marginBottom: "2px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
             cursor: "pointer",
             borderRadius: "4px",
-            minWidth: "250px",
+            minWidth: "fit-content",
+            height: "28px",
           }}
           onClick={(e) =>
             handleElementSelect(element.id, e.ctrlKey || e.metaKey)
           }
+          onContextMenu={(e) => handleContextMenu(e, element.id)}
         >
           <div
             style={{
               fontWeight: isSelected ? "bold" : "normal",
               display: "flex",
               alignItems: "center",
-              gap: "4px",
+              gap: "6px",
               flexGrow: 1,
+              width: "100%",
+              overflow: "hidden",
             }}
           >
             <span
               style={{
-                padding: "2px 6px",
+                padding: "2px 4px",
                 backgroundColor: "#eee",
                 borderRadius: "3px",
                 fontSize: "12px",
                 color: "#333",
                 display: "flex",
                 alignItems: "center",
-                gap: "6px",
+                gap: "4px",
                 flexShrink: 0,
+                height: "20px",
               }}
             >
               <span className="element-icon">{icon}</span>
@@ -202,53 +252,38 @@ const LayersPanel: React.FC = () => {
             {truncatedDisplayName && (
               <span
                 style={{
-                  fontSize: "13px",
+                  fontSize: "12px",
                   flexShrink: 0,
+                  marginRight: "6px",
+                  whiteSpace: "nowrap",
+                  height: "16px",
+                  lineHeight: "16px",
                 }}
                 title={displayName}
               >
                 {truncatedDisplayName}
               </span>
             )}
-            <span
-              style={{
-                fontSize: "13px",
-                color: "#666",
-                fontStyle: "italic",
-                flexGrow: 1,
-              }}
-              title={contentPreview}
-            >
-              {truncatedContentPreview}
-            </span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: "4px",
-              flexShrink: 0,
-            }}
-          >
-            {element.id !== rootElementId && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  console.log(`Deleting element: ${element.id}`);
-                  deleteElement(element.id);
-                }}
+            {truncatedContentPreview && (
+              <span
                 style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#ff4d4f",
-                  cursor: "pointer",
-                  padding: "2px 6px",
-                  borderRadius: "3px",
                   fontSize: "12px",
-                  fontWeight: "bold",
+                  color: "#666",
+                  fontStyle: "italic",
+                  flexGrow: 1,
+                  paddingLeft: "4px",
+                  borderLeft: contentPreview ? "1px solid #ddd" : "none",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  height: "16px",
+                  lineHeight: "16px",
+                  maxWidth: "100px",
                 }}
+                title={contentPreview}
               >
-                Delete
-              </button>
+                {truncatedContentPreview}
+              </span>
             )}
           </div>
         </div>
@@ -256,14 +291,28 @@ const LayersPanel: React.FC = () => {
         {element.children.length > 0 && (
           <div
             style={{
-              marginLeft: "10px",
-              borderLeft: "2px solid #e8e8e8",
-              paddingLeft: "8px",
+              paddingLeft: 0, // Reset padding
+              marginLeft: 0, // Reset margin
+              position: "relative", // For precise control of the vertical line
             }}
           >
-            {element.children.map((childId) =>
-              renderElementTree(childId, depth + 1)
-            )}
+            {/* Vertical line for children */}
+            <div
+              style={{
+                position: "absolute",
+                left: "7px", // Position the line precisely
+                top: "0",
+                bottom: "8px",
+                width: "2px",
+                backgroundColor: "#e8e8e8",
+              }}
+            />
+
+            <div style={{ marginLeft: `${INDENT_WIDTH}px` }}>
+              {element.children.map((childId) =>
+                renderElementTree(childId, depth + 1)
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -272,16 +321,20 @@ const LayersPanel: React.FC = () => {
 
   return (
     <div
+      ref={layersPanelRef}
+      tabIndex={0}
+      onKeyDown={handleKeyDown}
       style={{
         width: "300px",
         height: "100%",
         borderRight: "1px solid #ddd",
         display: "flex",
         flexDirection: "column",
-        padding: "16px",
+        padding: "16px 12px",
         background: "#f5f5f5",
         overflowY: "auto",
-        overflowX: "auto", // Yatay kaydırma çubuğu ekle
+        overflowX: "auto",
+        outline: "none",
       }}
     >
       <h2>Layers</h2>
@@ -303,10 +356,51 @@ const LayersPanel: React.FC = () => {
         </button>
       )}
 
-      <div style={{ flex: 1, overflowY: "auto", overflowX: "auto" }}>
+      <div
+        style={{
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "auto",
+          width: "100%",
+          paddingRight: "8px",
+        }}
+      >
         <h3>Structure</h3>
         {renderElementTree(rootElementId)}
       </div>
+
+      {/* Context Menu */}
+      {contextMenu.visible && (
+        <div
+          style={{
+            position: "fixed",
+            top: contextMenu.y,
+            left: contextMenu.x,
+            backgroundColor: "white",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            borderRadius: "4px",
+            padding: "8px 0",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            onClick={() => {
+              deleteElement(contextMenu.elementId);
+              setContextMenu((prev) => ({ ...prev, visible: false }));
+            }}
+            style={{
+              padding: "8px 16px",
+              cursor: "pointer",
+              fontSize: "14px",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
+            <span style={{ color: "#ff4d4f" }}>Delete</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
