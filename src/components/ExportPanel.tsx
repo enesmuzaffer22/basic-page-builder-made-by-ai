@@ -62,7 +62,6 @@ const AVAILABLE_ELEMENTS: { type: ElementType; label: string }[] = [
   { type: "img", label: "Image" },
   { type: "ul", label: "Unordered List" },
   { type: "ol", label: "Ordered List" },
-  { type: "li", label: "List Item" },
   { type: "span", label: "Span" },
   { type: "section", label: "Section" },
 ];

@@ -7,6 +7,19 @@ const previewStyles = {
   allElements: {
     boxSizing: "border-box" as const,
   },
+  listElements: {
+    maxWidth: "100%",
+    wordBreak: "break-word" as const,
+    overflowWrap: "break-word" as const,
+    paddingLeft: "30px", // Ensure space for markers
+    listStylePosition: "outside" as const, // Place markers outside of the list item box
+  },
+  listItemElements: {
+    maxWidth: "100%",
+    wordBreak: "break-word" as const,
+    overflowWrap: "break-word" as const,
+    marginLeft: "0", // Reset any margin that might hide markers
+  },
 };
 
 // This interface reflects the same structure as PageElementTree in the store
@@ -19,6 +32,7 @@ interface PageElementTree {
   parentId: string | null;
   isGroup?: boolean;
   groupName?: string;
+  listItems?: string[];
 }
 
 const PreviewScreen: React.FC = () => {
@@ -29,6 +43,7 @@ const PreviewScreen: React.FC = () => {
   const selectElement = usePageBuilderStore((state) => state.selectElement);
   const getElementsTree = usePageBuilderStore((state) => state.getElementsTree);
   const elements = usePageBuilderStore((state) => state.elements);
+  const deleteListItem = usePageBuilderStore((state) => state.deleteListItem);
 
   // Get the complete element tree using useMemo to prevent unnecessary recalculations
   const elementTree = useMemo(
@@ -48,7 +63,16 @@ const PreviewScreen: React.FC = () => {
   }
 
   const renderElement = (element: PageElementTree): React.ReactNode => {
-    const { id, type, content, style, children, isGroup, groupName } = element;
+    const {
+      id,
+      type,
+      content,
+      style,
+      children,
+      isGroup,
+      groupName,
+      listItems,
+    } = element;
 
     console.log(
       `Rendering element: ${id}, type: ${type}, children: ${children.length}`
@@ -56,10 +80,19 @@ const PreviewScreen: React.FC = () => {
 
     const isSelected = selectedElementId === id;
 
+    // Apply special styling for lists and list items
+    let additionalStyles = {};
+    if (type === "ul" || type === "ol") {
+      additionalStyles = previewStyles.listElements;
+    } else if (type === "li") {
+      additionalStyles = previewStyles.listItemElements;
+    }
+
     // Apply special styling for groups - only show distinct group styling when selected
     const elementStyle = {
       ...previewStyles.allElements,
       ...style,
+      ...additionalStyles,
       outline: isSelected ? "2px solid #1890ff" : "none",
       minHeight: children.length === 0 ? "20px" : undefined,
       minWidth: children.length === 0 ? "20px" : undefined,
@@ -158,23 +191,113 @@ const PreviewScreen: React.FC = () => {
         });
 
       case "ul":
-      case "ol":
-        return React.createElement(
-          type,
-          elementProps,
-          childElements.length > 0
-            ? [groupLabel, ...childElements]
-            : [
-                groupLabel,
-                ...[1, 2, 3].map((i) => <li key={i}>List item {i}</li>),
-              ]
-        );
+      case "ol": {
+        // Adjust list specific styles
+        const listTypeStyle =
+          type === "ul"
+            ? { listStyleType: "disc" } // Explicit disc for ul
+            : { listStyleType: "decimal" }; // Explicit decimal for ol
+
+        // Update element props with list style
+        const listElementProps = {
+          ...elementProps,
+          style: {
+            ...elementProps.style,
+            ...listTypeStyle,
+            paddingInlineStart: "30px", // Ensure space for markers in all browsers
+          },
+        };
+
+        // Render list items from listItems array if available
+        const listItemElements =
+          listItems && listItems.length > 0
+            ? listItems.map((item, index) => (
+                <li
+                  key={`${id}-item-${index}`}
+                  style={{
+                    maxWidth: "100%",
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
+                    display: "list-item", // Ensure list item behavior
+                    position: "relative", // For positioning the delete button
+                    paddingRight: "30px", // Make space for delete button
+                  }}
+                >
+                  {item}
+                  {isSelected && ( // Only show delete button when list is selected
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent list selection
+                        deleteListItem(id, index);
+                      }}
+                      style={{
+                        position: "absolute",
+                        right: "0",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                        background: "#ff4d4f",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%", // Ensure perfect circle
+                        width: "18px",
+                        height: "18px", // Equal width and height for perfect circle
+                        fontSize: "12px",
+                        lineHeight: "1",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                        opacity: "0.8",
+                        transition: "opacity 0.2s",
+                        padding: 0, // Remove padding that could distort the circle
+                        overflow: "hidden", // Ensure content doesn't overflow
+                        fontFamily: "Arial, sans-serif", // Consistent font
+                        boxShadow: "0 1px 2px rgba(0,0,0,0.2)", // Add subtle shadow
+                      }}
+                      title="Delete list item"
+                      onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
+                      onMouseOut={(e) =>
+                        (e.currentTarget.style.opacity = "0.8")
+                      }
+                    >
+                      ✕
+                    </button>
+                  )}
+                </li>
+              ))
+            : [1, 2, 3].map((i) => (
+                <li
+                  key={i}
+                  style={{
+                    maxWidth: "100%",
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
+                    display: "list-item", // Ensure list item behavior
+                  }}
+                >
+                  List item {i}
+                </li>
+              ));
+
+        return React.createElement(type, listElementProps, [
+          groupLabel,
+          ...listItemElements,
+          ...childElements,
+        ]);
+      }
 
       case "li":
-        return React.createElement(type, elementProps, [
-          groupLabel,
-          displayContent || "List item",
-        ]);
+        return React.createElement(
+          type,
+          {
+            ...elementProps,
+            style: {
+              ...elementProps.style,
+              display: "list-item", // Ensure list item behavior
+            },
+          },
+          [groupLabel, displayContent || "List item"]
+        );
 
       default:
         return null;
@@ -199,6 +322,7 @@ const PreviewScreen: React.FC = () => {
           height: "100%",
           border: "1px dashed #ddd",
           position: "relative",
+          overflow: "hidden",
           ...previewStyles.allElements,
         }}
       >

@@ -12,6 +12,7 @@ interface PageElementRef {
   parentId: string | null;
   isGroup?: boolean;
   groupName?: string;
+  listItems?: string[]; // For list items (ul, ol)
 }
 
 // For the tree representation
@@ -24,6 +25,7 @@ interface PageElementTree {
   parentId: string | null;
   isGroup?: boolean;
   groupName?: string;
+  listItems?: string[]; // For list items (ul, ol)
 }
 
 interface PageBuilderState {
@@ -42,6 +44,12 @@ interface PageBuilderState {
   getElementsTree: () => PageElementTree;
   generateHTML: () => string;
   generateCSS: () => string;
+
+  // List management
+  addListItem: (listId: string, content?: string) => void;
+  updateListItem: (listId: string, index: number, content: string) => void;
+  deleteListItem: (listId: string, index: number) => void;
+  reorderListItem: (listId: string, oldIndex: number, newIndex: number) => void;
 }
 
 const defaultStyles: ElementStyle = {
@@ -170,6 +178,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
 
       // Generate content based on element type
       let elementContent: string | undefined;
+      let defaultListItems: string[] | undefined;
 
       if (type === "div") {
         // Count existing divs (excluding the root div) to generate the next number
@@ -214,6 +223,9 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
         ).length;
         const nextListNumber = existingLists + 1;
         elementContent = `List ${nextListNumber}`;
+
+        // Create default list items
+        defaultListItems = ["List item 1", "List item 2", "List item 3"];
       } else if (type === "li") {
         const existingItems = get().elements.filter(
           (el) => el.type === "li"
@@ -236,6 +248,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
         children: [],
         parentId: effectiveParentId,
         content: elementContent,
+        listItems: defaultListItems,
       };
 
       console.log("Adding new element:", newElement);
@@ -486,7 +499,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
       const rootElement = get().getElementsTree();
 
       const generateElementHTML = (element: PageElementTree): string => {
-        const { type, content, children, id } = element;
+        const { type, content, children, id, listItems } = element;
 
         const childrenHTML = children.map(generateElementHTML).join("");
 
@@ -508,6 +521,24 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
             : type === "button"
             ? "Button"
             : "");
+
+        // For list elements (ul, ol)
+        if (type === "ul" || type === "ol") {
+          // If there are specific list items, render them
+          if (listItems && listItems.length > 0) {
+            const listItemsHTML = listItems
+              .map((item) => `<li>${item}</li>`)
+              .join("");
+            return `<${type} class="${styleClass}">${listItemsHTML}${childrenHTML}</${type}>`;
+          }
+          // Fallback if no list items defined
+          return `<${type} class="${styleClass}">
+            <li>List item 1</li>
+            <li>List item 2</li>
+            <li>List item 3</li>
+            ${childrenHTML}
+          </${type}>`;
+        }
 
         // For text content elements
         if (
@@ -685,6 +716,143 @@ ul, ol {
         .join("\n\n");
 
       return baseCSS + "\n\n" + elementCSS;
+    },
+
+    addListItem: (listId: string, content?: string) => {
+      set((state) => {
+        const listElement = state.elements.find((el) => el.id === listId);
+        if (
+          !listElement ||
+          (listElement.type !== "ul" && listElement.type !== "ol")
+        ) {
+          console.error(`Element with ID ${listId} not found or is not a list`);
+          return state;
+        }
+
+        // Generate default content for new list item
+        const itemContent =
+          content || `Item ${(listElement.listItems?.length || 0) + 1}`;
+
+        // Create a new list items array or append to existing
+        const updatedListItems = [
+          ...(listElement.listItems || []),
+          itemContent,
+        ];
+
+        return {
+          elements: state.elements.map((el) =>
+            el.id === listId ? { ...el, listItems: updatedListItems } : el
+          ),
+        };
+      });
+    },
+
+    updateListItem: (listId: string, index: number, content: string) => {
+      set((state) => {
+        const listElement = state.elements.find((el) => el.id === listId);
+        if (
+          !listElement ||
+          !listElement.listItems ||
+          index >= listElement.listItems.length
+        ) {
+          console.error(
+            `Cannot update list item: element not found or invalid index`
+          );
+          return state;
+        }
+
+        const updatedListItems = [...listElement.listItems];
+        updatedListItems[index] = content;
+
+        return {
+          elements: state.elements.map((el) =>
+            el.id === listId ? { ...el, listItems: updatedListItems } : el
+          ),
+        };
+      });
+    },
+
+    deleteListItem: (listId: string, index: number) => {
+      set((state) => {
+        const listElement = state.elements.find((el) => el.id === listId);
+        if (
+          !listElement ||
+          !listElement.listItems ||
+          index >= listElement.listItems.length
+        ) {
+          console.error(
+            `Cannot delete list item: element not found or invalid index`
+          );
+          return state;
+        }
+
+        const updatedListItems = [...listElement.listItems];
+        updatedListItems.splice(index, 1);
+
+        // If this was the last list item, delete the list element itself
+        if (updatedListItems.length === 0) {
+          // First, get the list element's parent
+          const parentId = listElement.parentId;
+          if (!parentId) return state; // Safety check
+
+          // Make sure parent exists
+          const parentElement = state.elements.find((el) => el.id === parentId);
+          if (!parentElement) return state;
+
+          // Update parent's children list (remove the list element's ID)
+          let updatedElements = state.elements.map((el) => {
+            if (el.id === parentId) {
+              return {
+                ...el,
+                children: el.children.filter((childId) => childId !== listId),
+              };
+            }
+            return el;
+          });
+
+          // Remove the list element from the elements array
+          updatedElements = updatedElements.filter((el) => el.id !== listId);
+
+          return {
+            elements: updatedElements,
+            selectedElementId: parentId, // Select parent after deletion
+          };
+        }
+
+        // Otherwise just update the list items
+        return {
+          elements: state.elements.map((el) =>
+            el.id === listId ? { ...el, listItems: updatedListItems } : el
+          ),
+        };
+      });
+    },
+
+    reorderListItem: (listId: string, oldIndex: number, newIndex: number) => {
+      set((state) => {
+        const listElement = state.elements.find((el) => el.id === listId);
+        if (
+          !listElement ||
+          !listElement.listItems ||
+          oldIndex >= listElement.listItems.length ||
+          newIndex >= listElement.listItems.length
+        ) {
+          console.error(
+            `Cannot reorder list item: element not found or invalid index`
+          );
+          return state;
+        }
+
+        const updatedListItems = [...listElement.listItems];
+        const [movedItem] = updatedListItems.splice(oldIndex, 1);
+        updatedListItems.splice(newIndex, 0, movedItem);
+
+        return {
+          elements: state.elements.map((el) =>
+            el.id === listId ? { ...el, listItems: updatedListItems } : el
+          ),
+        };
+      });
     },
   };
 });

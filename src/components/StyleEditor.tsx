@@ -142,7 +142,14 @@ const StyleEditor: React.FC = () => {
     updateElementStyle,
     updateElementContent,
     updateElementName,
+    addListItem,
+    updateListItem,
+    deleteListItem,
+    reorderListItem,
   } = usePageBuilderStore();
+
+  // State for new list item
+  const [newListItem, setNewListItem] = useState("");
 
   if (!selectedElementId) {
     return (
@@ -155,7 +162,8 @@ const StyleEditor: React.FC = () => {
   const selectedElement = elements.find((el) => el.id === selectedElementId);
   if (!selectedElement) return null;
 
-  const { type, style, content, isGroup, groupName } = selectedElement;
+  const { type, style, content, isGroup, groupName, listItems } =
+    selectedElement;
 
   const handleStyleChange = <T extends string | number>(
     property: keyof ElementStyle,
@@ -172,6 +180,33 @@ const StyleEditor: React.FC = () => {
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     updateElementName(selectedElementId, e.target.value);
+  };
+
+  // List item handlers
+  const handleAddListItem = () => {
+    if (newListItem.trim()) {
+      addListItem(selectedElementId, newListItem.trim());
+      setNewListItem("");
+    } else {
+      addListItem(selectedElementId);
+    }
+  };
+
+  const handleUpdateListItem = (index: number, value: string) => {
+    updateListItem(selectedElementId, index, value);
+  };
+
+  const handleDeleteListItem = (index: number) => {
+    deleteListItem(selectedElementId, index);
+  };
+
+  const handleMoveListItem = (index: number, direction: "up" | "down") => {
+    if (!listItems) return;
+
+    const newIndex = direction === "up" ? index - 1 : index + 1;
+    if (newIndex >= 0 && newIndex < listItems.length) {
+      reorderListItem(selectedElementId, index, newIndex);
+    }
   };
 
   // Element için gösterilecek adı belirle
@@ -214,6 +249,126 @@ const StyleEditor: React.FC = () => {
             onChange={handleContentChange}
             style={{ width: "100%", padding: "8px", minHeight: "60px" }}
           />
+        </div>
+      )}
+
+      {/* List item editor for lists */}
+      {(type === "ul" || type === "ol") && (
+        <div style={{ marginBottom: "16px" }}>
+          <h4>List Items</h4>
+
+          {/* Existing list items */}
+          <div style={{ marginBottom: "12px" }}>
+            {listItems && listItems.length > 0 ? (
+              listItems.map((item, index) => (
+                <div
+                  key={`list-item-${index}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginBottom: "8px",
+                    gap: "8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      marginRight: "8px",
+                    }}
+                  >
+                    <button
+                      onClick={() => handleMoveListItem(index, "up")}
+                      disabled={index === 0}
+                      style={{
+                        padding: "4px",
+                        background: index === 0 ? "#f0f0f0" : "#e6f7ff",
+                        border: "1px solid #d9d9d9",
+                        cursor: index === 0 ? "default" : "pointer",
+                        borderRadius: "4px 4px 0 0",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ▲
+                    </button>
+                    <button
+                      onClick={() => handleMoveListItem(index, "down")}
+                      disabled={index === listItems.length - 1}
+                      style={{
+                        padding: "4px",
+                        background:
+                          index === listItems.length - 1
+                            ? "#f0f0f0"
+                            : "#e6f7ff",
+                        border: "1px solid #d9d9d9",
+                        cursor:
+                          index === listItems.length - 1
+                            ? "default"
+                            : "pointer",
+                        borderRadius: "0 0 4px 4px",
+                        borderTop: "none",
+                        fontSize: "12px",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ▼
+                    </button>
+                  </div>
+                  <span style={{ marginRight: "8px", minWidth: "20px" }}>
+                    {index + 1}.
+                  </span>
+                  <input
+                    type="text"
+                    value={item}
+                    onChange={(e) =>
+                      handleUpdateListItem(index, e.target.value)
+                    }
+                    style={{ flex: 1, padding: "8px" }}
+                  />
+                  <button
+                    onClick={() => handleDeleteListItem(index)}
+                    style={{
+                      padding: "6px 10px",
+                      background: "#ff4d4f",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: "#888" }}>No list items. Add some below.</p>
+            )}
+          </div>
+
+          {/* Add new list item */}
+          <div style={{ display: "flex", marginBottom: "8px" }}>
+            <input
+              type="text"
+              value={newListItem}
+              onChange={(e) => setNewListItem(e.target.value)}
+              placeholder="New list item"
+              style={{ flex: 1, padding: "8px", marginRight: "8px" }}
+            />
+            <button
+              onClick={handleAddListItem}
+              style={{
+                padding: "8px 16px",
+                background: "#1890ff",
+                color: "white",
+                border: "none",
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+            >
+              Add Item
+            </button>
+          </div>
         </div>
       )}
 
