@@ -153,7 +153,7 @@ const StyleEditor: React.FC = () => {
 
   if (!selectedElementId) {
     return (
-      <div className="style-editor-panel">
+      <div className="style-editor-panel" style={{ boxSizing: "border-box" }}>
         <p>Select an element to edit its style</p>
       </div>
     );
@@ -213,7 +213,7 @@ const StyleEditor: React.FC = () => {
   const displayName = isGroup ? groupName : content;
 
   return (
-    <div className="style-editor-panel">
+    <div className="style-editor-panel" style={{ boxSizing: "border-box" }}>
       <h3>Style Editor - {type}</h3>
 
       {/* Element name editor for divs and groups */}

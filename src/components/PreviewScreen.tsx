@@ -43,7 +43,6 @@ const PreviewScreen: React.FC = () => {
   const selectElement = usePageBuilderStore((state) => state.selectElement);
   const getElementsTree = usePageBuilderStore((state) => state.getElementsTree);
   const elements = usePageBuilderStore((state) => state.elements);
-  const deleteListItem = usePageBuilderStore((state) => state.deleteListItem);
 
   // Get the complete element tree using useMemo to prevent unnecessary recalculations
   const elementTree = useMemo(
@@ -219,50 +218,9 @@ const PreviewScreen: React.FC = () => {
                     wordBreak: "break-word",
                     overflowWrap: "break-word",
                     display: "list-item", // Ensure list item behavior
-                    position: "relative", // For positioning the delete button
-                    paddingRight: "30px", // Make space for delete button
                   }}
                 >
                   {item}
-                  {isSelected && ( // Only show delete button when list is selected
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent list selection
-                        deleteListItem(id, index);
-                      }}
-                      style={{
-                        position: "absolute",
-                        right: "0",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                        background: "#ff4d4f",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%", // Ensure perfect circle
-                        width: "18px",
-                        height: "18px", // Equal width and height for perfect circle
-                        fontSize: "12px",
-                        lineHeight: "1",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        cursor: "pointer",
-                        opacity: "0.8",
-                        transition: "opacity 0.2s",
-                        padding: 0, // Remove padding that could distort the circle
-                        overflow: "hidden", // Ensure content doesn't overflow
-                        fontFamily: "Arial, sans-serif", // Consistent font
-                        boxShadow: "0 1px 2px rgba(0,0,0,0.2)", // Add subtle shadow
-                      }}
-                      title="Delete list item"
-                      onMouseOver={(e) => (e.currentTarget.style.opacity = "1")}
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.opacity = "0.8")
-                      }
-                    >
-                      ✕
-                    </button>
-                  )}
                 </li>
               ))
             : [1, 2, 3].map((i) => (
@@ -309,7 +267,7 @@ const PreviewScreen: React.FC = () => {
       style={{
         flex: 1,
         height: "100%",
-        padding: "20px",
+        padding: "16px",
         background: "#fff",
         overflow: "auto",
         boxShadow: "inset 0 0 10px rgba(0, 0, 0, 0.05)",
@@ -319,7 +277,7 @@ const PreviewScreen: React.FC = () => {
       <div
         style={{
           width: "100%",
-          height: "100%",
+          minHeight: "400px",
           border: "1px dashed #ddd",
           position: "relative",
           overflow: "hidden",

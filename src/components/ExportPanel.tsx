@@ -125,10 +125,10 @@ ${css}
         background: "#f8f8f8",
       }}
     >
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "15px" }}>
         <h3
           style={{
-            marginBottom: "12px",
+            marginBottom: "10px",
             textAlign: "center",
             fontSize: "18px",
             color: "#333",
@@ -142,7 +142,7 @@ ${css}
             flexWrap: "wrap",
             gap: "6px",
             justifyContent: "center",
-            marginBottom: "25px",
+            marginBottom: "20px",
           }}
         >
           {AVAILABLE_ELEMENTS.map(({ type, label }) => (

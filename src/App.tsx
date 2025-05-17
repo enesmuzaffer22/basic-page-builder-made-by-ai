@@ -13,7 +13,7 @@ function App() {
 
       <main className="app-main">
         <LayersPanel />
-        <div className="app-right-panel" style={{ paddingRight: "300px" }}>
+        <div className="app-right-panel">
           <PreviewScreen />
           <ExportPanel />
         </div>

@@ -72,6 +72,7 @@ html {
   flex-direction: column;
   overflow: hidden;
   background-color: #fff;
+  padding-right: 350px; /* Match exactly the width of style-editor-panel */
   transition: padding-right 0.3s ease;
 }
 
@@ -80,7 +81,7 @@ html {
   position: fixed;
   right: 0;
   top: 60px;
-  width: 300px;
+  width: 350px; /* Fixed width for consistency */
   height: calc(100vh - 60px);
   background-color: #f5f5f5;
   z-index: 100;
@@ -118,6 +119,7 @@ button:active {
     width: 100%;
     height: auto;
     max-height: 50vh;
+    max-width: 100%;
   }
 }
 
