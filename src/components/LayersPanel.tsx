@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { ElementType } from "../types";
-import type { KeyboardEvent, MouseEvent } from "react";
+import type { KeyboardEvent, MouseEvent, DragEvent } from "react";
 import { usePageBuilderStore } from "../store/pageBuilderStore";
 import {
   FaBox,
@@ -15,6 +15,7 @@ import {
   FaFont,
   FaRegSquare,
   FaSquareCheck,
+  FaArrowsUpDownLeftRight,
 } from "react-icons/fa6";
 
 // Function to get icon for element type
@@ -68,6 +69,7 @@ const LayersPanel: React.FC = () => {
   const selectElement = usePageBuilderStore((state) => state.selectElement);
   const deleteElement = usePageBuilderStore((state) => state.deleteElement);
   const groupElements = usePageBuilderStore((state) => state.groupElements);
+  const reorderElement = usePageBuilderStore((state) => state.reorderElement);
 
   const [selectedElements, setSelectedElements] = useState<string[]>([]);
   const [contextMenu, setContextMenu] = useState<{
@@ -76,6 +78,16 @@ const LayersPanel: React.FC = () => {
     y: number;
     elementId: string;
   }>({ visible: false, x: 0, y: 0, elementId: "" });
+
+  // State for drag and drop operations
+  const [draggedElementId, setDraggedElementId] = useState<string | null>(null);
+  const [dropTargetInfo, setDropTargetInfo] = useState<{
+    parentId: string | null;
+    index: number | null;
+  }>({ parentId: null, index: null });
+
+  // Add a hover state to track which element is being hovered over
+  const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
 
   // Reference to the layers panel
   const layersPanelRef = useRef<HTMLDivElement>(null);
@@ -98,6 +110,21 @@ const LayersPanel: React.FC = () => {
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
+
+  // Add an effect to reset the drag state when mouse is released outside the component
+  useEffect(() => {
+    const handleMouseUp = () => {
+      if (draggedElementId) {
+        setDraggedElementId(null);
+        setDropTargetInfo({ parentId: null, index: null });
+      }
+    };
+
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, [draggedElementId]);
 
   const rootElement = elements.find((el) => el.id === rootElementId);
   if (!rootElement) {
@@ -154,6 +181,264 @@ const LayersPanel: React.FC = () => {
     });
   };
 
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, elementId: string) => {
+    // Prevent dragging the root element
+    if (elementId === rootElementId) {
+      e.preventDefault();
+      return;
+    }
+
+    // Find the element being dragged
+    const element = elements.find((el) => el.id === elementId);
+    if (!element) {
+      e.preventDefault();
+      return;
+    }
+
+    // Set the element being dragged
+    setDraggedElementId(elementId);
+
+    // Set drag effect and data
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", elementId);
+
+    // Add a ghost image with element info
+    const ghostElement = document.createElement("div");
+    ghostElement.textContent = element.content || element.type;
+    ghostElement.style.padding = "8px";
+    ghostElement.style.background = "#ffffff";
+    ghostElement.style.border = "1px solid #1890ff";
+    ghostElement.style.borderRadius = "4px";
+    ghostElement.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
+    ghostElement.style.position = "absolute";
+    ghostElement.style.top = "-1000px";
+    ghostElement.style.fontSize = "12px";
+    ghostElement.style.fontFamily = "Arial, sans-serif";
+    ghostElement.style.pointerEvents = "none";
+    document.body.appendChild(ghostElement);
+
+    e.dataTransfer.setDragImage(ghostElement, 0, 0);
+
+    setTimeout(() => {
+      document.body.removeChild(ghostElement);
+    }, 0);
+  };
+
+  const handleDragOver = (
+    e: DragEvent<HTMLDivElement>,
+    parentId: string,
+    index: number
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Skip if no element is being dragged
+    if (!draggedElementId) return;
+
+    // Don't allow dropping on self or in a descendant
+    if (draggedElementId === parentId) return;
+
+    // Check if target parent is a descendant of the dragged element
+    const isTargetDescendantOfDragged = (
+      targetId: string,
+      draggedId: string
+    ): boolean => {
+      const dragged = elements.find((el) => el.id === draggedId);
+      if (!dragged) return false;
+
+      // Check if target is a direct child
+      if (dragged.children.includes(targetId)) return true;
+
+      // Check if target is a descendant
+      return dragged.children.some((childId) =>
+        isTargetDescendantOfDragged(targetId, childId)
+      );
+    };
+
+    if (isTargetDescendantOfDragged(parentId, draggedElementId)) return;
+
+    // Set the drop effect and update target info
+    e.dataTransfer.dropEffect = "move";
+    setDropTargetInfo({ parentId, index });
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Remove visual indication
+    const target = e.currentTarget;
+    target.style.backgroundColor = "";
+  };
+
+  const handleDrop = (
+    e: DragEvent<HTMLDivElement>,
+    targetParentId: string,
+    targetIndex: number
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Get the dragged element ID
+    const elementId = draggedElementId || e.dataTransfer.getData("text/plain");
+    if (!elementId) return;
+
+    // Skip if no element is being dragged or dropping on self
+    if (elementId === targetParentId) {
+      setDraggedElementId(null);
+      setDropTargetInfo({ parentId: null, index: null });
+      return;
+    }
+
+    // Find the element and its current parent
+    const element = elements.find((el) => el.id === elementId);
+    if (!element) {
+      setDraggedElementId(null);
+      setDropTargetInfo({ parentId: null, index: null });
+      return;
+    }
+
+    const sourceParentId = element.parentId;
+    if (!sourceParentId) {
+      // Can't move root element
+      setDraggedElementId(null);
+      setDropTargetInfo({ parentId: null, index: null });
+      return;
+    }
+
+    // Check if target parent is a descendant of the dragged element
+    const isTargetDescendantOfDragged = (
+      targetId: string,
+      draggedId: string
+    ): boolean => {
+      const dragged = elements.find((el) => el.id === draggedId);
+      if (!dragged) return false;
+
+      // Check if target is a direct child
+      if (dragged.children.includes(targetId)) return true;
+
+      // Check if target is a descendant
+      return dragged.children.some((childId) =>
+        isTargetDescendantOfDragged(targetId, childId)
+      );
+    };
+
+    if (isTargetDescendantOfDragged(targetParentId, elementId)) {
+      console.warn("Cannot move an element into its own descendant");
+      setDraggedElementId(null);
+      setDropTargetInfo({ parentId: null, index: null });
+      return;
+    }
+
+    // Find the source parent's children array
+    const sourceParent = elements.find((el) => el.id === sourceParentId);
+    const targetParent = elements.find((el) => el.id === targetParentId);
+
+    if (!sourceParent || !targetParent) {
+      setDraggedElementId(null);
+      setDropTargetInfo({ parentId: null, index: null });
+      return;
+    }
+
+    // Check if the element is already in the correct position
+    if (sourceParentId === targetParentId) {
+      const currentIndex = sourceParent.children.indexOf(elementId);
+
+      // If moving to the same exact position or the position right after itself, do nothing
+      if (
+        currentIndex === targetIndex ||
+        (currentIndex + 1 === targetIndex &&
+          currentIndex === sourceParent.children.length - 1)
+      ) {
+        setDraggedElementId(null);
+        setDropTargetInfo({ parentId: null, index: null });
+        return;
+      }
+
+      // Log for debugging
+      console.log(
+        `Moving element ${elementId} within parent ${sourceParentId} from index ${currentIndex} to ${targetIndex}`
+      );
+    } else {
+      // Log for debugging
+      console.log(
+        `Moving element ${elementId} from parent ${sourceParentId} to parent ${targetParentId} at index ${targetIndex}`
+      );
+    }
+
+    // Execute the reorder
+    try {
+      reorderElement(elementId, targetParentId, targetIndex);
+      console.log("Reorder operation completed successfully");
+    } catch (error) {
+      console.error("Error during reordering:", error);
+    }
+
+    // Reset drag state
+    setDraggedElementId(null);
+    setDropTargetInfo({ parentId: null, index: null });
+  };
+
+  const handleElementMouseEnter = (elementId: string) => {
+    if (!draggedElementId || draggedElementId === elementId) return;
+    setHoveredElementId(elementId);
+  };
+
+  const handleElementMouseLeave = () => {
+    setHoveredElementId(null);
+  };
+
+  const renderDropZone = (parentId: string, index: number, isLast = false) => {
+    const isActive =
+      dropTargetInfo.parentId === parentId && dropTargetInfo.index === index;
+
+    // Skip if we're trying to drag an element onto itself
+    if (draggedElementId && parentId === draggedElementId) {
+      return <div style={{ height: "4px" }} />;
+    }
+
+    // If dragging but not an active target, show a less visible drop zone
+    const isDragging = draggedElementId !== null;
+
+    return (
+      <div
+        onDragOver={(e) => handleDragOver(e, parentId, index)}
+        onDragLeave={handleDragLeave}
+        onDrop={(e) => handleDrop(e, parentId, index)}
+        style={{
+          height: isActive ? "10px" : "6px",
+          marginBottom: "1px",
+          marginTop: isLast ? "2px" : "1px",
+          backgroundColor: isActive
+            ? "rgba(24, 144, 255, 0.7)"
+            : isDragging
+            ? "rgba(24, 144, 255, 0.1)"
+            : "transparent",
+          transition: "all 0.15s ease",
+          position: "relative",
+          borderRadius: "3px",
+          zIndex: 10,
+          cursor: "default",
+        }}
+      >
+        {isActive && (
+          <div
+            style={{
+              position: "absolute",
+              left: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+              width: "100%",
+              height: "2px",
+              backgroundColor: "#1890ff",
+              boxShadow: "0px 0px 3px rgba(24, 144, 255, 0.5)",
+            }}
+          />
+        )}
+      </div>
+    );
+  };
+
   const renderElementTree = (elementId: string, depth = 0) => {
     const element = elements.find((el) => el.id === elementId);
     if (!element) {
@@ -167,6 +452,7 @@ const LayersPanel: React.FC = () => {
     const isMultiSelected = selectedElements.includes(element.id);
     const isGroup = element.isGroup;
     const icon = getElementIcon(element.type);
+    const isDragged = draggedElementId === element.id;
 
     // Special display for root element
     const displayName =
@@ -202,20 +488,50 @@ const LayersPanel: React.FC = () => {
         }}
       >
         <div
+          draggable={element.id !== rootElementId}
+          onDragStart={(e) => handleDragStart(e, element.id)}
+          onDragOver={(e) => handleDragOver(e, element.id, 0)}
+          onDragLeave={handleDragLeave}
+          onDrop={(e) => handleDrop(e, element.id, 0)}
+          onMouseEnter={() => handleElementMouseEnter(element.id)}
+          onMouseLeave={handleElementMouseLeave}
           style={{
             padding: "4px 8px",
-            backgroundColor: isSelected ? "#e6f7ff" : "transparent",
+            backgroundColor: isSelected
+              ? "#e6f7ff"
+              : isDragged
+              ? "rgba(24, 144, 255, 0.2)"
+              : hoveredElementId === element.id
+              ? "rgba(24, 144, 255, 0.1)"
+              : dropTargetInfo.parentId === element.id
+              ? "rgba(24, 144, 255, 0.1)"
+              : "transparent",
             border: isMultiSelected
               ? "1px dashed #1890ff"
+              : isDragged
+              ? "1px solid #1890ff"
+              : hoveredElementId === element.id
+              ? "1px solid rgba(24, 144, 255, 0.5)"
               : "1px solid transparent",
             marginBottom: "2px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            cursor: "pointer",
+            cursor:
+              element.id === rootElementId
+                ? "default"
+                : draggedElementId
+                ? "grabbing"
+                : "grab",
             borderRadius: "4px",
             minWidth: "fit-content",
             height: "28px",
+            opacity: isDragged ? 0.5 : 1,
+            transition: "all 0.15s ease",
+            transform:
+              hoveredElementId === element.id && draggedElementId
+                ? "translateX(3px)"
+                : "translateX(0)",
           }}
           onClick={(e) =>
             handleElementSelect(element.id, e.ctrlKey || e.metaKey)
@@ -248,6 +564,12 @@ const LayersPanel: React.FC = () => {
               }}
             >
               <span className="element-icon">{icon}</span>
+              {element.id !== rootElementId && (
+                <FaArrowsUpDownLeftRight
+                  size={10}
+                  style={{ marginLeft: "2px" }}
+                />
+              )}
             </span>
             {truncatedDisplayName && (
               <span
@@ -309,9 +631,19 @@ const LayersPanel: React.FC = () => {
             />
 
             <div style={{ marginLeft: `${INDENT_WIDTH}px` }}>
-              {element.children.map((childId) =>
-                renderElementTree(childId, depth + 1)
-              )}
+              {element.children.map((childId, index) => (
+                <React.Fragment key={`fragment-${childId}-${index}`}>
+                  {renderDropZone(element.id, index)}
+                  {renderElementTree(childId, depth + 1)}
+                  {/* Add a drop zone after the last child as well */}
+                  {index === element.children.length - 1 &&
+                    renderDropZone(element.id, index + 1, true)}
+                </React.Fragment>
+              ))}
+
+              {/* If there are no children, still add a drop zone */}
+              {element.children.length === 0 &&
+                renderDropZone(element.id, 0, true)}
             </div>
           </div>
         )}

@@ -41,6 +41,11 @@ interface PageBuilderState {
   updateElementName: (id: string, name: string) => void;
   deleteElement: (id: string) => void;
   groupElements: (elementIds: string[]) => void;
+  reorderElement: (
+    elementId: string,
+    targetParentId: string,
+    targetIndex: number
+  ) => void;
   getElementsTree: () => PageElementTree;
   generateHTML: () => string;
   generateCSS: () => string;
@@ -1051,6 +1056,151 @@ img {
           elements: state.elements.map((el) =>
             el.id === listId ? { ...el, listItems: updatedListItems } : el
           ),
+        };
+      });
+    },
+
+    reorderElement: (
+      elementId: string,
+      targetParentId: string,
+      targetIndex: number
+    ) => {
+      set((state) => {
+        // Get the element to move
+        const elementToMove = state.elements.find((el) => el.id === elementId);
+        if (!elementToMove) {
+          console.error(`Element to move with ID ${elementId} not found`);
+          return state;
+        }
+
+        // Get the current parent
+        const sourceParentId = elementToMove.parentId;
+        if (!sourceParentId) {
+          console.error(`Cannot move root element`);
+          return state;
+        }
+
+        // Get the target parent
+        const targetParent = state.elements.find(
+          (el) => el.id === targetParentId
+        );
+        if (!targetParent) {
+          console.error(`Target parent with ID ${targetParentId} not found`);
+          return state;
+        }
+
+        // Get the source parent to check current index
+        const sourceParent = state.elements.find(
+          (el) => el.id === sourceParentId
+        );
+        if (!sourceParent) {
+          console.error(`Source parent with ID ${sourceParentId} not found`);
+          return state;
+        }
+
+        // Get current index in source parent
+        const currentIndex = sourceParent.children.indexOf(elementId);
+        if (currentIndex === -1) {
+          console.error(
+            `Element ${elementId} not found in source parent's children`
+          );
+          return state;
+        }
+
+        // Log current state for debugging
+        console.log("Current state before reordering:", {
+          elementId,
+          sourceParentId,
+          targetParentId,
+          currentIndex,
+          targetIndex,
+          sourceParentChildren: [...sourceParent.children],
+          targetParentChildren: [...targetParent.children],
+        });
+
+        // Check if target index is valid
+        const maxTargetIndex = targetParent.children.length;
+        const validTargetIndex = Math.max(
+          0,
+          Math.min(targetIndex, maxTargetIndex)
+        );
+
+        // Create a deep copy of all elements to avoid mutation issues
+        let updatedElements = [...state.elements];
+
+        // Handle same parent reordering
+        if (sourceParentId === targetParentId) {
+          // We need to modify a single parent's children array
+          updatedElements = updatedElements.map((el) => {
+            if (el.id === sourceParentId) {
+              // Create a copy of the children array
+              const newChildren = [...el.children];
+
+              // Remove the element from its current position
+              newChildren.splice(currentIndex, 1);
+
+              // Insert it at the target position
+              newChildren.splice(
+                validTargetIndex > currentIndex
+                  ? validTargetIndex - 1
+                  : validTargetIndex,
+                0,
+                elementId
+              );
+
+              console.log("Updated children array:", newChildren);
+
+              return {
+                ...el,
+                children: newChildren,
+              };
+            }
+            return el;
+          });
+        } else {
+          // Moving between different parents
+          // First, remove from source parent
+          updatedElements = updatedElements.map((el) => {
+            if (el.id === sourceParentId) {
+              return {
+                ...el,
+                children: el.children.filter((id) => id !== elementId),
+              };
+            }
+            return el;
+          });
+
+          // Then, add to target parent
+          updatedElements = updatedElements.map((el) => {
+            if (el.id === targetParentId) {
+              const newChildren = [...el.children];
+              newChildren.splice(validTargetIndex, 0, elementId);
+
+              return {
+                ...el,
+                children: newChildren,
+              };
+            }
+            return el;
+          });
+
+          // Update the element's parentId
+          updatedElements = updatedElements.map((el) => {
+            if (el.id === elementId) {
+              return {
+                ...el,
+                parentId: targetParentId,
+              };
+            }
+            return el;
+          });
+        }
+
+        console.log("Finished reordering element");
+
+        return {
+          ...state,
+          elements: updatedElements,
         };
       });
     },
