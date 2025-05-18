@@ -118,8 +118,6 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
           padding: "16px 32px",
           backgroundColor: "#ffffff",
           width: "100%",
-          borderBottom: "1px solid #eaeaea",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
         },
         children: [logoId, linksContainerId],
         parentId: rootId,
