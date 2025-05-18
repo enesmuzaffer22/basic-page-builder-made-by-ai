@@ -33,6 +33,10 @@ interface PageBuilderState {
   selectedElementId: string | null;
   rootElementId: string;
 
+  // Undo/Redo stacks
+  undoStack?: PageElementRef[][];
+  redoStack?: PageElementRef[][];
+
   // Actions
   addElement: (type: ElementType, parentId?: string) => void;
   selectElement: (id: string | null) => void;
@@ -55,6 +59,10 @@ interface PageBuilderState {
   updateListItem: (listId: string, index: number, content: string) => void;
   deleteListItem: (listId: string, index: number) => void;
   reorderListItem: (listId: string, oldIndex: number, newIndex: number) => void;
+
+  // Undo/Redo actions
+  undo: () => void;
+  redo: () => void;
 }
 
 const defaultStyles: ElementStyle = {
@@ -90,6 +98,18 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
   const card2TextId = uuidv4();
   const card3TitleId = uuidv4();
   const card3TextId = uuidv4();
+
+  // Helper to push to undo stack
+  const pushToUndoStack = (elements: PageElementRef[]) => {
+    const { undoStack = [] } = get();
+    set({
+      undoStack: [
+        ...undoStack,
+        elements.map((el) => ({ ...el, children: [...el.children] })),
+      ],
+      redoStack: [],
+    });
+  };
 
   return {
     elements: [
@@ -458,8 +478,11 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     ],
     selectedElementId: null,
     rootElementId: rootId,
+    undoStack: [],
+    redoStack: [],
 
     addElement: (type: ElementType, parentId?: string) => {
+      pushToUndoStack(get().elements);
       const effectiveParentId = parentId || get().rootElementId;
 
       // Generate content based on element type
@@ -674,6 +697,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     },
 
     updateElementStyle: (id, style) => {
+      pushToUndoStack(get().elements);
       set((state) => ({
         elements: state.elements.map((el) =>
           el.id === id ? { ...el, style: { ...el.style, ...style } } : el
@@ -682,6 +706,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     },
 
     updateElementContent: (id, content) => {
+      pushToUndoStack(get().elements);
       set((state) => ({
         elements: state.elements.map((el) =>
           el.id === id ? { ...el, content } : el
@@ -690,6 +715,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     },
 
     updateElementName: (id, name) => {
+      pushToUndoStack(get().elements);
       set((state) => ({
         elements: state.elements.map((el) => {
           if (el.id === id) {
@@ -706,6 +732,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     },
 
     deleteElement: (id) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         // Don't allow deleting the root element
         if (id === state.rootElementId) return state;
@@ -759,6 +786,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
     },
 
     groupElements: (elementIds) => {
+      pushToUndoStack(get().elements);
       if (elementIds.length < 2) return;
 
       set((state) => {
@@ -1205,6 +1233,7 @@ img {
     },
 
     addListItem: (listId: string, content?: string) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         const listElement = state.elements.find((el) => el.id === listId);
         if (
@@ -1234,6 +1263,7 @@ img {
     },
 
     updateListItem: (listId: string, index: number, content: string) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         const listElement = state.elements.find((el) => el.id === listId);
         if (
@@ -1259,6 +1289,7 @@ img {
     },
 
     deleteListItem: (listId: string, index: number) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         const listElement = state.elements.find((el) => el.id === listId);
         if (
@@ -1315,6 +1346,7 @@ img {
     },
 
     reorderListItem: (listId: string, oldIndex: number, newIndex: number) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         const listElement = state.elements.find((el) => el.id === listId);
         if (
@@ -1346,6 +1378,7 @@ img {
       targetParentId: string,
       targetIndex: number
     ) => {
+      pushToUndoStack(get().elements);
       set((state) => {
         // Get the element to move
         const elementToMove = state.elements.find((el) => el.id === elementId);
@@ -1483,6 +1516,34 @@ img {
           ...state,
           elements: updatedElements,
         };
+      });
+    },
+
+    undo: () => {
+      const { undoStack = [], redoStack = [], elements } = get();
+      if (undoStack.length === 0) return;
+      const prev = undoStack[undoStack.length - 1];
+      set({
+        elements: prev.map((el) => ({ ...el, children: [...el.children] })),
+        undoStack: undoStack.slice(0, -1),
+        redoStack: [
+          ...redoStack,
+          elements.map((el) => ({ ...el, children: [...el.children] })),
+        ],
+      });
+    },
+
+    redo: () => {
+      const { undoStack = [], redoStack = [], elements } = get();
+      if (redoStack.length === 0) return;
+      const next = redoStack[redoStack.length - 1];
+      set({
+        elements: next.map((el) => ({ ...el, children: [...el.children] })),
+        redoStack: redoStack.slice(0, -1),
+        undoStack: [
+          ...undoStack,
+          elements.map((el) => ({ ...el, children: [...el.children] })),
+        ],
       });
     },
   };

@@ -37,9 +37,10 @@ html {
 .app-header {
   background-color: #1890ff;
   color: white;
-  padding: 16px;
+  padding: 20px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 10;
+  height: 64px;
 }
 
 .app-header h1 {
@@ -80,9 +81,9 @@ html {
 .style-editor-panel {
   position: fixed;
   right: 0;
-  top: 60px;
+  top: 64px;
   width: 350px; /* Fixed width for consistency */
-  height: calc(100vh - 60px);
+  height: calc(100vh - 64px);
   background-color: #f5f5f5;
   z-index: 100;
   overflow-y: auto;
@@ -157,4 +158,19 @@ button:active {
 
 .read-the-docs {
   color: #888;
+}
+
+.undo-btn,
+.redo-btn {
+  transition: background 0.2s, color 0.2s;
+}
+.undo-btn:hover,
+.redo-btn:hover {
+  background: #e6f7ff;
+  color: #096dd9;
+}
+.undo-btn:active,
+.redo-btn:active {
+  background: #bae7ff;
+  color: #0050b3;
 }
