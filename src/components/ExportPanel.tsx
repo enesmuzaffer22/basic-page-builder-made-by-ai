@@ -96,11 +96,15 @@ const ExportPanel: React.FC = () => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page Builder Export</title>
   <style>
+    /* Apply box-sizing to all elements for consistent rendering */
+    * {
+      box-sizing: border-box;
+    }
 ${css}
   </style>
 </head>
 <body>
-  <div class="page-container" style="width: 100%; margin: 0 auto; padding: 0;">
+  <div class="page-container" style="width: 100%; margin: 0 auto; padding: 0; overflow: hidden;">
     ${html}
   </div>
 </body>

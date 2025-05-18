@@ -169,6 +169,110 @@ const StyleEditor: React.FC = () => {
     property: keyof ElementStyle,
     value: T
   ) => {
+    // Birbiriyle ilişkili özellikleri yönet
+    if (
+      property === "border" &&
+      typeof value === "string" &&
+      value.trim() !== ""
+    ) {
+      // Border shorthand kullanıldığında, ilgili özellikleri temizle
+      // Kullanıcı örn. "1px solid red" girdiğinde, borderWidth, borderStyle, borderColor temizlenir
+      updateElementStyle(selectedElementId, {
+        [property]: value,
+        borderWidth: undefined,
+        borderStyle: undefined,
+        borderColor: undefined,
+      });
+      return;
+    }
+
+    // Border özellikleri değiştirildiğinde border shorthand'i güncelle
+    if (
+      property === "borderWidth" ||
+      property === "borderStyle" ||
+      property === "borderColor"
+    ) {
+      const currentStyle = { ...style };
+      const updatedProp = { [property]: value };
+      const updatedStyle = { ...currentStyle, ...updatedProp };
+
+      // Tüm border özellikleri varsa, shorthand'i otomatik oluştur
+      if (
+        updatedStyle.borderWidth &&
+        updatedStyle.borderStyle &&
+        updatedStyle.borderColor
+      ) {
+        const borderShorthand = `${updatedStyle.borderWidth} ${updatedStyle.borderStyle} ${updatedStyle.borderColor}`;
+        updateElementStyle(selectedElementId, {
+          ...updatedProp,
+          border: borderShorthand,
+        });
+        return;
+      }
+    }
+
+    // Padding shorthand kullanıldığında, ilgili özellikleri temizle
+    if (
+      property === "padding" &&
+      typeof value === "string" &&
+      value.trim() !== ""
+    ) {
+      updateElementStyle(selectedElementId, {
+        [property]: value,
+        paddingTop: undefined,
+        paddingRight: undefined,
+        paddingBottom: undefined,
+        paddingLeft: undefined,
+      });
+      return;
+    }
+
+    // Margin shorthand kullanıldığında, ilgili özellikleri temizle
+    if (
+      property === "margin" &&
+      typeof value === "string" &&
+      value.trim() !== ""
+    ) {
+      updateElementStyle(selectedElementId, {
+        [property]: value,
+        marginTop: undefined,
+        marginRight: undefined,
+        marginBottom: undefined,
+        marginLeft: undefined,
+      });
+      return;
+    }
+
+    // Tek bir taraf değiştirildiğinde, shorthand'i sil
+    if (
+      ["paddingTop", "paddingRight", "paddingBottom", "paddingLeft"].includes(
+        property as string
+      ) &&
+      typeof value === "string" &&
+      value.trim() !== ""
+    ) {
+      updateElementStyle(selectedElementId, {
+        [property]: value,
+        padding: undefined,
+      });
+      return;
+    }
+
+    if (
+      ["marginTop", "marginRight", "marginBottom", "marginLeft"].includes(
+        property as string
+      ) &&
+      typeof value === "string" &&
+      value.trim() !== ""
+    ) {
+      updateElementStyle(selectedElementId, {
+        [property]: value,
+        margin: undefined,
+      });
+      return;
+    }
+
+    // Normal durumlarda sadece belirtilen özelliği güncelle
     updateElementStyle(selectedElementId, { [property]: value });
   };
 
@@ -511,28 +615,208 @@ const StyleEditor: React.FC = () => {
           />
         </div>
 
-        <div style={{ marginBottom: "8px" }}>
-          <label style={{ display: "block", marginBottom: "4px" }}>
+        <div style={{ marginBottom: "16px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "4px",
+              fontWeight: "bold",
+            }}
+          >
             Padding
           </label>
-          <MeasurementInput
-            value={style.padding}
-            onChange={(value) => handleStyleChange("padding", value)}
-            placeholder="Padding value"
-            supportMultipleValues={true}
-          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              marginBottom: "8px",
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Top
+              </label>
+              <MeasurementInput
+                value={style.paddingTop}
+                onChange={(value) => handleStyleChange("paddingTop", value)}
+                placeholder="Top"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Right
+              </label>
+              <MeasurementInput
+                value={style.paddingRight}
+                onChange={(value) => handleStyleChange("paddingRight", value)}
+                placeholder="Right"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Bottom
+              </label>
+              <MeasurementInput
+                value={style.paddingBottom}
+                onChange={(value) => handleStyleChange("paddingBottom", value)}
+                placeholder="Bottom"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Left
+              </label>
+              <MeasurementInput
+                value={style.paddingLeft}
+                onChange={(value) => handleStyleChange("paddingLeft", value)}
+                placeholder="Left"
+              />
+            </div>
+          </div>
+          <div style={{ marginBottom: "8px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                marginBottom: "2px",
+              }}
+            >
+              All sides (shorthand)
+            </label>
+            <MeasurementInput
+              value={style.padding}
+              onChange={(value) => handleStyleChange("padding", value)}
+              placeholder="All padding values"
+              supportMultipleValues={true}
+            />
+          </div>
         </div>
 
-        <div style={{ marginBottom: "8px" }}>
-          <label style={{ display: "block", marginBottom: "4px" }}>
+        <div style={{ marginBottom: "16px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "4px",
+              fontWeight: "bold",
+            }}
+          >
             Margin
           </label>
-          <MeasurementInput
-            value={style.margin}
-            onChange={(value) => handleStyleChange("margin", value)}
-            placeholder="Margin value"
-            supportMultipleValues={true}
-          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              marginBottom: "8px",
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Top
+              </label>
+              <MeasurementInput
+                value={style.marginTop}
+                onChange={(value) => handleStyleChange("marginTop", value)}
+                placeholder="Top"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Right
+              </label>
+              <MeasurementInput
+                value={style.marginRight}
+                onChange={(value) => handleStyleChange("marginRight", value)}
+                placeholder="Right"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Bottom
+              </label>
+              <MeasurementInput
+                value={style.marginBottom}
+                onChange={(value) => handleStyleChange("marginBottom", value)}
+                placeholder="Bottom"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Left
+              </label>
+              <MeasurementInput
+                value={style.marginLeft}
+                onChange={(value) => handleStyleChange("marginLeft", value)}
+                placeholder="Left"
+              />
+            </div>
+          </div>
+          <div style={{ marginBottom: "8px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                marginBottom: "2px",
+              }}
+            >
+              All sides (shorthand)
+            </label>
+            <MeasurementInput
+              value={style.margin}
+              onChange={(value) => handleStyleChange("margin", value)}
+              placeholder="All margin values"
+              supportMultipleValues={true}
+            />
+          </div>
         </div>
       </div>
 
@@ -623,17 +907,109 @@ const StyleEditor: React.FC = () => {
           </select>
         </div>
 
-        <div style={{ marginBottom: "8px" }}>
-          <label style={{ display: "block", marginBottom: "4px" }}>
+        <div style={{ marginBottom: "16px" }}>
+          <label
+            style={{
+              display: "block",
+              marginBottom: "4px",
+              fontWeight: "bold",
+            }}
+          >
             Border
           </label>
-          <input
-            type="text"
-            value={style.border || ""}
-            onChange={(e) => handleStyleChange("border", e.target.value)}
-            placeholder="e.g. 1px solid black"
-            style={{ width: "100%", padding: "8px" }}
-          />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              marginBottom: "8px",
+            }}
+          >
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Width
+              </label>
+              <MeasurementInput
+                value={style.borderWidth}
+                onChange={(value) => handleStyleChange("borderWidth", value)}
+                placeholder="Width"
+              />
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Style
+              </label>
+              <select
+                value={style.borderStyle || ""}
+                onChange={(e) =>
+                  handleStyleChange("borderStyle", e.target.value)
+                }
+                style={{ width: "100%", padding: "8px" }}
+              >
+                <option value="">Default</option>
+                <option value="none">None</option>
+                <option value="solid">Solid</option>
+                <option value="dashed">Dashed</option>
+                <option value="dotted">Dotted</option>
+                <option value="double">Double</option>
+                <option value="groove">Groove</option>
+                <option value="ridge">Ridge</option>
+                <option value="inset">Inset</option>
+                <option value="outset">Outset</option>
+              </select>
+            </div>
+            <div>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "2px",
+                }}
+              >
+                Color
+              </label>
+              <input
+                type="color"
+                value={style.borderColor || "#000000"}
+                onChange={(e) =>
+                  handleStyleChange("borderColor", e.target.value)
+                }
+                style={{ width: "100%", padding: "4px" }}
+              />
+            </div>
+          </div>
+
+          <div style={{ marginBottom: "8px" }}>
+            <label
+              style={{
+                display: "block",
+                fontSize: "12px",
+                marginBottom: "2px",
+              }}
+            >
+              Shorthand (all borders)
+            </label>
+            <input
+              type="text"
+              value={style.border || ""}
+              onChange={(e) => handleStyleChange("border", e.target.value)}
+              placeholder="e.g. 1px solid black"
+              style={{ width: "100%", padding: "8px" }}
+            />
+          </div>
         </div>
 
         <div style={{ marginBottom: "8px" }}>

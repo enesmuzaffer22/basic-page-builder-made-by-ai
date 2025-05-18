@@ -93,8 +93,9 @@ const PreviewScreen: React.FC = () => {
       ...style,
       ...additionalStyles,
       outline: isSelected ? "2px solid #1890ff" : "none",
-      minHeight: children.length === 0 ? "20px" : undefined,
-      minWidth: children.length === 0 ? "20px" : undefined,
+      minHeight:
+        style.minHeight || (children.length === 0 ? "20px" : undefined),
+      minWidth: style.minWidth || (children.length === 0 ? "20px" : undefined),
       padding: style.padding || "4px",
       position: "relative" as const,
       background: style.background || style.backgroundColor,
@@ -169,11 +170,27 @@ const PreviewScreen: React.FC = () => {
       case "h6":
       case "p":
       case "span":
-      case "button":
         return React.createElement(type, elementProps, [
           groupLabel,
           displayContent,
         ]);
+
+      case "button": {
+        // Buton özel stili
+        const buttonElementProps = {
+          ...elementProps,
+          style: {
+            ...elementProps.style,
+            backgroundColor: style.backgroundColor || "#212529",
+            width: style.width || "100%",
+            textAlign: style.textAlign || "center",
+          },
+        };
+        return React.createElement(type, buttonElementProps, [
+          groupLabel,
+          displayContent,
+        ]);
+      }
 
       case "a":
         return React.createElement(

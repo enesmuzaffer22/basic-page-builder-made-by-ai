@@ -34,13 +34,17 @@ export type FlexWrap = "nowrap" | "wrap" | "wrap-reverse";
 export type Gap = string; // '0px', '10px', etc.
 
 export interface ElementStyle {
-  display?: "flex" | "block" | "inline" | "inline-block" | "none";
+  display?: "flex" | "block" | "inline" | "inline-block" | "none" | "list-item";
   flexDirection?: FlexDirection;
   justifyContent?: JustifyContent;
   alignItems?: AlignItems;
   flexWrap?: FlexWrap;
   gap?: Gap;
   padding?: string;
+  paddingTop?: string;
+  paddingRight?: string;
+  paddingBottom?: string;
+  paddingLeft?: string;
   margin?: string;
   marginBottom?: string;
   marginTop?: string;
@@ -48,13 +52,30 @@ export interface ElementStyle {
   marginRight?: string;
   width?: string;
   height?: string;
+  minWidth?: string;
+  minHeight?: string;
+  maxWidth?: string;
+  paddingInlineStart?: string;
   backgroundColor?: string;
   background?: string;
   color?: string;
   fontSize?: string;
   fontWeight?: string;
   textAlign?: "left" | "center" | "right" | "justify";
+  textDecoration?: "none" | "underline" | "line-through" | "overline";
   border?: string;
+  borderWidth?: string;
+  borderStyle?:
+    | "none"
+    | "solid"
+    | "dashed"
+    | "dotted"
+    | "double"
+    | "groove"
+    | "ridge"
+    | "inset"
+    | "outset";
+  borderColor?: string;
   borderRadius?: string;
   borderBottom?: string;
   borderTop?: string;
@@ -63,6 +84,19 @@ export interface ElementStyle {
   outline?: string; // Editor özel stili
   boxSizing?: "border-box" | "content-box";
   position?: "relative" | "absolute" | "fixed" | "sticky";
+  zIndex?: string | number;
+  wordBreak?: "normal" | "break-all" | "break-word" | "keep-all";
+  overflowWrap?: "normal" | "break-word";
+  listStyleType?:
+    | "disc"
+    | "circle"
+    | "square"
+    | "decimal"
+    | "decimal-leading-zero"
+    | "none";
+  listStylePosition?: "inside" | "outside";
+  objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
+  cursor?: "pointer" | "default" | "text" | "move" | "not-allowed";
 }
 
 export interface PageElement {

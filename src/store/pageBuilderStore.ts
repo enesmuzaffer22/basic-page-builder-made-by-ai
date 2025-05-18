@@ -180,6 +180,97 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
       let elementContent: string | undefined;
       let defaultListItems: string[] | undefined;
 
+      // Create default styles based on element type
+      let elementStyle: ElementStyle = { ...defaultStyles };
+
+      // Apply type-specific default styles
+      if (type === "div" || type === "section") {
+        // For container elements
+        elementStyle = {
+          ...elementStyle,
+          padding: "4px",
+          minHeight: "20px",
+          minWidth: "20px",
+        };
+      } else if (type === "h1") {
+        elementStyle = {
+          ...elementStyle,
+          fontSize: "2rem",
+          fontWeight: "bold",
+          margin: "0 0 1rem 0",
+        };
+      } else if (type === "h2") {
+        elementStyle = {
+          ...elementStyle,
+          fontSize: "1.75rem",
+          fontWeight: "bold",
+          margin: "0 0 0.875rem 0",
+        };
+      } else if (type === "h3") {
+        elementStyle = {
+          ...elementStyle,
+          fontSize: "1.5rem",
+          fontWeight: "bold",
+          margin: "0 0 0.75rem 0",
+        };
+      } else if (type === "p") {
+        elementStyle = {
+          ...elementStyle,
+          fontSize: "1rem",
+          margin: "0 0 1rem 0",
+        };
+      } else if (type === "a") {
+        elementStyle = {
+          ...elementStyle,
+          color: "#1890ff",
+          textDecoration: "none",
+        };
+      } else if (type === "button") {
+        elementStyle = {
+          ...elementStyle,
+          padding: "0.5rem 1rem",
+          backgroundColor: "#212529", // Siyah buton arka planı (önizleme ile eşleşmesi için)
+          color: "white",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+          width: "100%", // Butonun genişliğini tam genişlik olarak ayarla
+          textAlign: "center",
+        };
+      } else if (type === "img") {
+        elementStyle = {
+          ...elementStyle,
+          width: "150px",
+          height: "auto",
+          objectFit: "contain",
+        };
+      } else if (type === "ul" || type === "ol") {
+        elementStyle = {
+          ...elementStyle,
+          paddingLeft: "30px",
+          listStylePosition: "outside",
+          listStyleType: type === "ul" ? "disc" : "decimal",
+          maxWidth: "100%",
+          wordBreak: "break-word",
+          overflowWrap: "break-word",
+          margin: "0 0 1rem 0",
+        };
+      } else if (type === "li") {
+        elementStyle = {
+          ...elementStyle,
+          display: "list-item",
+          maxWidth: "100%",
+          wordBreak: "break-word",
+          overflowWrap: "break-word",
+          marginLeft: "0",
+        };
+      } else if (type === "span") {
+        elementStyle = {
+          ...elementStyle,
+          display: "inline",
+        };
+      }
+
       if (type === "div") {
         // Count existing divs (excluding the root div) to generate the next number
         const existingDivs = get().elements.filter(
@@ -244,7 +335,7 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
       const newElement: PageElementRef = {
         id: uuidv4(),
         type,
-        style: { ...defaultStyles },
+        style: elementStyle,
         children: [],
         parentId: effectiveParentId,
         content: elementContent,
@@ -522,40 +613,47 @@ const usePageBuilderStore = create<PageBuilderState>((set, get) => {
             ? "Button"
             : "");
 
+        // Handle special case for images
+        if (type === "img") {
+          return `<img class="${styleClass}" src="https://via.placeholder.com/150" alt="Image">`;
+        }
+
         // For list elements (ul, ol)
         if (type === "ul" || type === "ol") {
+          // Build list style attributes
+          const listTypeStyle = type === "ul" ? "disc" : "decimal";
+
           // If there are specific list items, render them
           if (listItems && listItems.length > 0) {
             const listItemsHTML = listItems
-              .map((item) => `<li>${item}</li>`)
+              .map(
+                (item) =>
+                  `<li style="display: list-item; word-break: break-word; overflow-wrap: break-word;">${item}</li>`
+              )
               .join("");
-            return `<${type} class="${styleClass}">${listItemsHTML}${childrenHTML}</${type}>`;
+            return `<${type} class="${styleClass}" style="list-style-type: ${listTypeStyle};">${listItemsHTML}${childrenHTML}</${type}>`;
           }
           // Fallback if no list items defined
-          return `<${type} class="${styleClass}">
-            <li>List item 1</li>
-            <li>List item 2</li>
-            <li>List item 3</li>
+          return `<${type} class="${styleClass}" style="list-style-type: ${listTypeStyle};">
+            <li style="display: list-item; word-break: break-word; overflow-wrap: break-word;">List item 1</li>
+            <li style="display: list-item; word-break: break-word; overflow-wrap: break-word;">List item 2</li>
+            <li style="display: list-item; word-break: break-word; overflow-wrap: break-word;">List item 3</li>
             ${childrenHTML}
           </${type}>`;
         }
 
         // For text content elements
         if (
-          [
-            "h1",
-            "h2",
-            "h3",
-            "h4",
-            "h5",
-            "h6",
-            "p",
-            "span",
-            "a",
-            "button",
-          ].includes(type)
+          ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "button"].includes(
+            type
+          )
         ) {
           return `<${type} class="${styleClass}">${displayContent}${childrenHTML}</${type}>`;
+        }
+
+        // Special case for links
+        if (type === "a") {
+          return `<a class="${styleClass}" href="#" target="_blank">${displayContent}${childrenHTML}</a>`;
         }
 
         // For container elements - no special treatment for groups in exported HTML
@@ -620,84 +718,186 @@ a:hover {
 button {
   font-size: 1rem;
   padding: 0.5rem 1rem;
-  background-color: #1890ff;
+  background-color: #212529;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  width: 100%;
+  text-align: center;
 }
 
 ul, ol {
-  padding-left: 2rem;
+  padding-left: 30px;
   margin-bottom: 1rem;
+  list-style-position: outside;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+li {
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  margin-left: 0;
+  display: list-item;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 `;
 
       // Generate element-specific CSS
       const elementCSS = elements
         .map((el) => {
-          // Filter out editor-specific styles (outline, border for groups, etc.) that should not appear in exported code
+          // Filter out editor-specific styles
           const cleanStyle = { ...el.style };
 
-          // Don't include editor styling in export
-          delete cleanStyle.outline; // Remove outline for all elements
+          // Remove editor-specific styles
+          delete cleanStyle.outline;
+          delete cleanStyle.zIndex;
 
-          if (el.isGroup) {
-            // For groups, preserve essential styles but remove editor-specific styling
-            delete cleanStyle.border; // Remove border for groups
-            delete cleanStyle.borderBottom; // Remove individual border properties for groups
-            delete cleanStyle.borderTop;
-            delete cleanStyle.borderLeft;
-            delete cleanStyle.borderRight;
-            delete cleanStyle.background; // Remove highlight background
-            delete cleanStyle.backgroundColor; // Also remove backgroundColor if present
-          }
-
-          // Remove positioning properties used only for editing
-          delete cleanStyle.position;
-          delete cleanStyle.boxSizing;
-
-          // Ensure font sizing is consistent for text elements
-          if (el.type === "p" && !cleanStyle.fontSize) {
-            cleanStyle.fontSize = "1rem";
-          }
-
+          // Only remove these borders if they're the editor's selection borders
           if (
-            ["h1", "h2", "h3", "h4", "h5", "h6"].includes(el.type) &&
-            !cleanStyle.fontSize
+            cleanStyle.border === "1px dashed #1890ff" ||
+            cleanStyle.border === "2px solid #1890ff"
           ) {
-            switch (el.type) {
-              case "h1":
-                cleanStyle.fontSize = "2rem";
-                break;
-              case "h2":
-                cleanStyle.fontSize = "1.75rem";
-                break;
-              case "h3":
-                cleanStyle.fontSize = "1.5rem";
-                break;
-              case "h4":
-                cleanStyle.fontSize = "1.25rem";
-                break;
-              case "h5":
-                cleanStyle.fontSize = "1.1rem";
-                break;
-              case "h6":
-                cleanStyle.fontSize = "1rem";
-                break;
-            }
+            delete cleanStyle.border;
           }
 
-          // Add default margin for navbar and other container elements if not set
+          // Only remove background if it's related to selection styling
+          if (cleanStyle.background === "#1890ff") {
+            delete cleanStyle.background;
+          }
+
+          // Ensure minimum dimensions for elements that should have them
           if (
-            el.type === "div" &&
-            el.content === "Navbar" &&
-            !cleanStyle.marginBottom
+            (el.type === "div" || el.type === "section") &&
+            !el.children.length
           ) {
-            cleanStyle.marginBottom = "1rem";
+            if (!cleanStyle.minHeight) cleanStyle.minHeight = "20px";
+            if (!cleanStyle.minWidth) cleanStyle.minWidth = "20px";
           }
 
-          // Ensure all flex containers have proper display settings
+          // Default padding for container elements if not specified
+          if (
+            !cleanStyle.padding &&
+            (el.type === "div" || el.type === "section")
+          ) {
+            cleanStyle.padding = "4px";
+          }
+
+          // Apply specific style enhancements based on element type
+          switch (el.type) {
+            case "ul":
+            case "ol":
+              // Ensure lists have correct styling
+              cleanStyle.listStylePosition =
+                cleanStyle.listStylePosition || "outside";
+              cleanStyle.paddingLeft = cleanStyle.paddingLeft || "30px";
+              cleanStyle.maxWidth = cleanStyle.maxWidth || "100%";
+              cleanStyle.wordBreak = cleanStyle.wordBreak || "break-word";
+              cleanStyle.overflowWrap = cleanStyle.overflowWrap || "break-word";
+              cleanStyle.listStyleType =
+                cleanStyle.listStyleType ||
+                (el.type === "ul" ? "disc" : "decimal");
+              cleanStyle.margin = cleanStyle.margin || "0 0 1rem 0";
+              break;
+
+            case "li":
+              // List item specific styling
+              cleanStyle.maxWidth = cleanStyle.maxWidth || "100%";
+              cleanStyle.wordBreak = cleanStyle.wordBreak || "break-word";
+              cleanStyle.overflowWrap = cleanStyle.overflowWrap || "break-word";
+              cleanStyle.marginLeft = cleanStyle.marginLeft || "0";
+              cleanStyle.display = cleanStyle.display || "list-item";
+              break;
+
+            case "img":
+              // Image specific styling
+              cleanStyle.width = cleanStyle.width || "150px";
+              cleanStyle.height = cleanStyle.height || "auto";
+              cleanStyle.objectFit = cleanStyle.objectFit || "contain";
+              break;
+
+            case "p":
+              // Paragraph styling
+              cleanStyle.fontSize = cleanStyle.fontSize || "1rem";
+              cleanStyle.margin = cleanStyle.margin || "0 0 1rem 0";
+              break;
+
+            case "a":
+              // Link styling
+              cleanStyle.color = cleanStyle.color || "#1890ff";
+              cleanStyle.textDecoration = cleanStyle.textDecoration || "none";
+              break;
+
+            case "button":
+              // Button styling
+              if (!cleanStyle.padding) cleanStyle.padding = "0.5rem 1rem";
+              if (!cleanStyle.background && !cleanStyle.backgroundColor)
+                cleanStyle.backgroundColor = "#212529"; // Siyah buton arka planı
+              if (!cleanStyle.color) cleanStyle.color = "white";
+              if (!cleanStyle.border) cleanStyle.border = "none";
+              if (!cleanStyle.borderRadius) cleanStyle.borderRadius = "4px";
+              if (!cleanStyle.cursor) cleanStyle.cursor = "pointer";
+              if (!cleanStyle.width) cleanStyle.width = "100%";
+              if (!cleanStyle.textAlign) cleanStyle.textAlign = "center";
+              break;
+
+            case "h1":
+            case "h2":
+            case "h3":
+            case "h4":
+            case "h5":
+            case "h6":
+              // Headings styling
+              if (!cleanStyle.fontSize) {
+                switch (el.type) {
+                  case "h1":
+                    cleanStyle.fontSize = "2rem";
+                    break;
+                  case "h2":
+                    cleanStyle.fontSize = "1.75rem";
+                    break;
+                  case "h3":
+                    cleanStyle.fontSize = "1.5rem";
+                    break;
+                  case "h4":
+                    cleanStyle.fontSize = "1.25rem";
+                    break;
+                  case "h5":
+                    cleanStyle.fontSize = "1.1rem";
+                    break;
+                  case "h6":
+                    cleanStyle.fontSize = "1rem";
+                    break;
+                }
+              }
+              if (!cleanStyle.margin) {
+                switch (el.type) {
+                  case "h1":
+                    cleanStyle.margin = "0 0 1rem 0";
+                    break;
+                  case "h2":
+                    cleanStyle.margin = "0 0 0.875rem 0";
+                    break;
+                  case "h3":
+                    cleanStyle.margin = "0 0 0.75rem 0";
+                    break;
+                  default:
+                    cleanStyle.margin = "0 0 0.5rem 0";
+                    break;
+                }
+              }
+              if (!cleanStyle.fontWeight) cleanStyle.fontWeight = "bold";
+              break;
+          }
+
+          // Ensure flex containers have proper display settings
           if (cleanStyle.flexDirection && !cleanStyle.display) {
             cleanStyle.display = "flex";
           }
