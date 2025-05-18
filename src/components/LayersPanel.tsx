@@ -89,6 +89,9 @@ const LayersPanel: React.FC = () => {
   // Add a hover state to track which element is being hovered over
   const [hoveredElementId, setHoveredElementId] = useState<string | null>(null);
 
+  // Add state to track if data is loading
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+
   // Reference to the layers panel
   const layersPanelRef = useRef<HTMLDivElement>(null);
 
@@ -97,6 +100,14 @@ const LayersPanel: React.FC = () => {
     console.log("Current elements in LayersPanel:", elements);
     console.log("Root element ID:", rootElementId);
     console.log("Selected element ID:", selectedElementId);
+
+    // Set loading state based on elements and rootElementId
+    if (elements.length > 0 && rootElementId) {
+      const rootExists = elements.some((el) => el.id === rootElementId);
+      setIsLoading(!rootExists);
+    } else {
+      setIsLoading(true);
+    }
   }, [elements, rootElementId, selectedElementId]);
 
   // Close context menu when clicking outside
@@ -126,10 +137,49 @@ const LayersPanel: React.FC = () => {
     };
   }, [draggedElementId]);
 
+  // If data is still loading or root element not found, show a loading state
+  if (isLoading || !rootElementId || !elements.length) {
+    return (
+      <div
+        style={{
+          width: "300px",
+          height: "100%",
+          borderRight: "1px solid #ddd",
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          background: "#f5f5f5",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h2>Layers</h2>
+        <div>Loading page content...</div>
+      </div>
+    );
+  }
+
   const rootElement = elements.find((el) => el.id === rootElementId);
   if (!rootElement) {
-    console.error("Root element not found");
-    return <div>Error: Root element not found</div>;
+    console.error("Root element not found", { rootElementId, elements });
+    return (
+      <div
+        style={{
+          width: "300px",
+          height: "100%",
+          borderRight: "1px solid #ddd",
+          display: "flex",
+          flexDirection: "column",
+          padding: "16px",
+          background: "#f5f5f5",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h2>Layers</h2>
+        <div>Error: Root element not found. Please reload the page.</div>
+      </div>
+    );
   }
 
   const handleElementSelect = (id: string, multiSelect: boolean) => {

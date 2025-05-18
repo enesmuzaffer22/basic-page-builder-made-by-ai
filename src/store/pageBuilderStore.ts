@@ -63,6 +63,9 @@ interface PageBuilderState {
   // Undo/Redo actions
   undo: () => void;
   redo: () => void;
+
+  // Load page data
+  loadPageData: (pageElements: PageElementRef[]) => void;
 }
 
 const defaultStyles: ElementStyle = {
@@ -1546,8 +1549,442 @@ img {
         ],
       });
     },
+
+    loadPageData: (pageElements: PageElementRef[]) => {
+      // Find the root element ID first
+      let rootId: string;
+
+      if (pageElements.length > 0) {
+        // Try to find the root element (which has no parent)
+        const rootElement = pageElements.find((el) => el.parentId === null);
+
+        if (rootElement) {
+          rootId = rootElement.id;
+          console.log("Found root element in page data:", rootId);
+        } else {
+          // If no root element, create a new one
+          rootId = uuidv4();
+          console.warn(
+            "No root element found in page data, created new ID:",
+            rootId
+          );
+        }
+      } else {
+        // For empty pages, use default element structure with a new root ID
+        rootId = uuidv4();
+        console.log("Empty page, using new root ID:", rootId);
+      }
+
+      // Reset store with proper root ID
+      set({
+        elements:
+          pageElements.length > 0
+            ? pageElements.map((el) => ({ ...el }))
+            : getDefaultElements(rootId), // Use function that accepts rootId
+        selectedElementId: null,
+        rootElementId: rootId,
+        undoStack: [],
+        redoStack: [],
+      });
+    },
   };
 });
+
+// Helper function to get default elements when creating a new page
+const getDefaultElements = (rootId?: string): PageElementRef[] => {
+  // Use provided rootId or generate a new one
+  const newRootId = rootId || uuidv4();
+  const navbarId = uuidv4();
+  const logoId = uuidv4();
+  const linksContainerId = uuidv4();
+  const link1Id = uuidv4();
+  const link2Id = uuidv4();
+  const link3Id = uuidv4();
+  const heroSectionId = uuidv4();
+  const heroContentId = uuidv4();
+  const heroTitleId = uuidv4();
+  const heroTextId = uuidv4();
+  const heroButtonId = uuidv4();
+  const cardsSectionId = uuidv4();
+  const cardsContainerId = uuidv4();
+  const card1Id = uuidv4();
+  const card2Id = uuidv4();
+  const card3Id = uuidv4();
+  const card1TitleId = uuidv4();
+  const card1TextId = uuidv4();
+  const card2TitleId = uuidv4();
+  const card2TextId = uuidv4();
+  const card3TitleId = uuidv4();
+  const card3TextId = uuidv4();
+
+  return [
+    // Root container
+    {
+      id: newRootId,
+      type: "div",
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        width: "100%",
+        height: "100%",
+        padding: "0",
+        margin: "0",
+      },
+      children: [navbarId, heroSectionId, cardsSectionId],
+      parentId: null,
+      content: "Page Container",
+    },
+    // Navbar
+    {
+      id: navbarId,
+      type: "div",
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "16px 32px",
+        backgroundColor: "#ffffff",
+        width: "100%",
+      },
+      children: [logoId, linksContainerId],
+      parentId: newRootId,
+      content: "Navbar",
+    },
+    // Logo
+    {
+      id: logoId,
+      type: "h1",
+      style: {
+        margin: "0",
+        fontSize: "24px",
+        fontWeight: "bold",
+        color: "#1890ff",
+      },
+      children: [],
+      parentId: navbarId,
+      content: "Brand",
+    },
+    // Links container
+    {
+      id: linksContainerId,
+      type: "div",
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        gap: "24px",
+      },
+      children: [link1Id, link2Id, link3Id],
+      parentId: navbarId,
+      content: "Links Container",
+    },
+    // Link 1
+    {
+      id: link1Id,
+      type: "a",
+      style: {
+        color: "#333333",
+        textDecoration: "none",
+        fontSize: "16px",
+        fontWeight: "500",
+        transition: "color 0.2s ease",
+      },
+      children: [],
+      parentId: linksContainerId,
+      content: "Home",
+    },
+    // Link 2
+    {
+      id: link2Id,
+      type: "a",
+      style: {
+        color: "#333333",
+        textDecoration: "none",
+        fontSize: "16px",
+        fontWeight: "500",
+        transition: "color 0.2s ease",
+      },
+      children: [],
+      parentId: linksContainerId,
+      content: "Features",
+    },
+    // Link 3
+    {
+      id: link3Id,
+      type: "a",
+      style: {
+        color: "#333333",
+        textDecoration: "none",
+        fontSize: "16px",
+        fontWeight: "500",
+        transition: "color 0.2s ease",
+      },
+      children: [],
+      parentId: linksContainerId,
+      content: "Contact",
+    },
+    // Hero Section
+    {
+      id: heroSectionId,
+      type: "section",
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "80px 32px",
+        backgroundColor: "#f8f9fa",
+        textAlign: "center",
+        width: "100%",
+      },
+      children: [heroContentId],
+      parentId: newRootId,
+      content: "Hero Section",
+    },
+    // Hero Content
+    {
+      id: heroContentId,
+      type: "div",
+      style: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        maxWidth: "800px",
+        gap: "24px",
+      },
+      children: [heroTitleId, heroTextId, heroButtonId],
+      parentId: heroSectionId,
+      content: "Hero Content",
+    },
+    // Hero Title
+    {
+      id: heroTitleId,
+      type: "h1",
+      style: {
+        fontSize: "48px",
+        fontWeight: "bold",
+        color: "#333333",
+        margin: "0",
+        lineHeight: "1.2",
+      },
+      children: [],
+      parentId: heroContentId,
+      content: "Build Beautiful Pages",
+    },
+    // Hero Text
+    {
+      id: heroTextId,
+      type: "p",
+      style: {
+        fontSize: "20px",
+        color: "#666666",
+        margin: "0",
+        lineHeight: "1.6",
+      },
+      children: [],
+      parentId: heroContentId,
+      content:
+        "Create stunning web pages with our intuitive page builder. Drag, drop, and customize your way to a perfect website.",
+    },
+    // Hero Button
+    {
+      id: heroButtonId,
+      type: "button",
+      style: {
+        backgroundColor: "#1890ff",
+        color: "#ffffff",
+        padding: "12px 32px",
+        fontSize: "18px",
+        fontWeight: "500",
+        border: "none",
+        borderRadius: "6px",
+        cursor: "pointer",
+        transition: "background-color 0.2s ease",
+        width: "auto",
+      },
+      children: [],
+      parentId: heroContentId,
+      content: "Get Started",
+    },
+    // Cards Section
+    {
+      id: cardsSectionId,
+      type: "section",
+      style: {
+        padding: "80px 32px",
+        backgroundColor: "#ffffff",
+        width: "100%",
+      },
+      children: [cardsContainerId],
+      parentId: newRootId,
+      content: "Cards Section",
+    },
+    // Cards Container
+    {
+      id: cardsContainerId,
+      type: "div",
+      style: {
+        display: "flex",
+        flexDirection: "row",
+        gap: "32px",
+        maxWidth: "1200px",
+        margin: "0 auto",
+        flexWrap: "wrap",
+        justifyContent: "center",
+      },
+      children: [card1Id, card2Id, card3Id],
+      parentId: cardsSectionId,
+      content: "Cards Container",
+    },
+    // Card 1
+    {
+      id: card1Id,
+      type: "div",
+      style: {
+        flex: "1",
+        minWidth: "300px",
+        maxWidth: "350px",
+        padding: "32px",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        border: "1px solid #eaeaea",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      },
+      children: [card1TitleId, card1TextId],
+      parentId: cardsContainerId,
+      content: "Card 1",
+    },
+    // Card 1 Title
+    {
+      id: card1TitleId,
+      type: "h3",
+      style: {
+        fontSize: "24px",
+        fontWeight: "bold",
+        color: "#333333",
+        margin: "0",
+      },
+      children: [],
+      parentId: card1Id,
+      content: "Easy to Use",
+    },
+    // Card 1 Text
+    {
+      id: card1TextId,
+      type: "p",
+      style: {
+        fontSize: "16px",
+        color: "#666666",
+        margin: "0",
+        lineHeight: "1.6",
+      },
+      children: [],
+      parentId: card1Id,
+      content:
+        "Our intuitive drag-and-drop interface makes it easy to create beautiful pages without any coding knowledge.",
+    },
+    // Card 2
+    {
+      id: card2Id,
+      type: "div",
+      style: {
+        flex: "1",
+        minWidth: "300px",
+        maxWidth: "350px",
+        padding: "32px",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        border: "1px solid #eaeaea",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      },
+      children: [card2TitleId, card2TextId],
+      parentId: cardsContainerId,
+      content: "Card 2",
+    },
+    // Card 2 Title
+    {
+      id: card2TitleId,
+      type: "h3",
+      style: {
+        fontSize: "24px",
+        fontWeight: "bold",
+        color: "#333333",
+        margin: "0",
+      },
+      children: [],
+      parentId: card2Id,
+      content: "Responsive Design",
+    },
+    // Card 2 Text
+    {
+      id: card2TextId,
+      type: "p",
+      style: {
+        fontSize: "16px",
+        color: "#666666",
+        margin: "0",
+        lineHeight: "1.6",
+      },
+      children: [],
+      parentId: card2Id,
+      content:
+        "All pages are automatically responsive and look great on any device, from desktop to mobile.",
+    },
+    // Card 3
+    {
+      id: card3Id,
+      type: "div",
+      style: {
+        flex: "1",
+        minWidth: "300px",
+        maxWidth: "350px",
+        padding: "32px",
+        backgroundColor: "#ffffff",
+        borderRadius: "8px",
+        border: "1px solid #eaeaea",
+        display: "flex",
+        flexDirection: "column",
+        gap: "16px",
+      },
+      children: [card3TitleId, card3TextId],
+      parentId: cardsContainerId,
+      content: "Card 3",
+    },
+    // Card 3 Title
+    {
+      id: card3TitleId,
+      type: "h3",
+      style: {
+        fontSize: "24px",
+        fontWeight: "bold",
+        color: "#333333",
+        margin: "0",
+      },
+      children: [],
+      parentId: card3Id,
+      content: "Export Ready",
+    },
+    // Card 3 Text
+    {
+      id: card3TextId,
+      type: "p",
+      style: {
+        fontSize: "16px",
+        color: "#666666",
+        margin: "0",
+        lineHeight: "1.6",
+      },
+      children: [],
+      parentId: card3Id,
+      content:
+        "Export your pages as clean HTML and CSS code, ready to be used in any web project.",
+    },
+  ];
+};
 
 // Export the store
 export { usePageBuilderStore };

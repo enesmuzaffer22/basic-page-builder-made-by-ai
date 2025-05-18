@@ -97,6 +97,9 @@ export interface ElementStyle {
   listStylePosition?: "inside" | "outside";
   objectFit?: "fill" | "contain" | "cover" | "none" | "scale-down";
   cursor?: "pointer" | "default" | "text" | "move" | "not-allowed";
+  transition?: string;
+  lineHeight?: string;
+  flex?: string | number;
 }
 
 export interface PageElement {
