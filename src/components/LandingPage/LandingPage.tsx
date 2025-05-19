@@ -19,6 +19,7 @@ const LandingPage = () => {
       </header>
 
       <section className="hero">
+        <div className="hero-bg"></div>
         <div className="container">
           <div className="hero-content">
             <h1>Build Beautiful Pages Without Code</h1>
@@ -34,16 +35,6 @@ const LandingPage = () => {
                 See How It Works
               </a>
             </div>
-          </div>
-          <div className="hero-image">
-            <img
-              src="/images/screenshot.png"
-              alt="Page Builder Screenshot"
-              onError={(e) => {
-                e.currentTarget.src =
-                  "https://placehold.co/600x400?text=Page+Builder";
-              }}
-            />
           </div>
         </div>
       </section>
@@ -62,6 +53,7 @@ const LandingPage = () => {
             </div>
             <div className="feature-card">
               <FiCode className="feature-icon" />
+              <h3>Clean Export</h3>
               <p>Export clean HTML and CSS code that you can use anywhere.</p>
             </div>
             <div className="feature-card">
@@ -148,14 +140,6 @@ const LandingPage = () => {
               <a href="#">Terms of Service</a>
               <a href="#">Privacy Policy</a>
             </div>
-          </div>
-        </div>
-        <div className="footer-bottom">
-          <div className="container">
-            <p>
-              &copy; {new Date().getFullYear()} Page Builder. All rights
-              reserved.
-            </p>
           </div>
         </div>
       </footer>
