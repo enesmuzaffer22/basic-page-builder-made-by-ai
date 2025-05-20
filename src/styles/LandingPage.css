@@ -9,7 +9,6 @@ body {
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: #f2f2f2;
   line-height: 1.6;
-  background-color: #050a18;
   overflow-x: hidden;
 }
 
@@ -20,20 +19,25 @@ body {
 }
 
 /* Header */
-.landing-header {
+.hero .landing-header {
   position: absolute;
+  width: 100%;
   top: 0;
   left: 0;
-  width: 100%;
+  background-color: transparent !important;
   z-index: 100;
-  background-color: #050a18;
+  display: flex !important;
+  align-items: center !important;
 }
 
-.landing-header .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.hero .landing-header .container {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  background-color: transparent !important;
   padding: 24px 20px;
+  width: 100%;
+  flex-direction: row !important;
 }
 
 .logo {

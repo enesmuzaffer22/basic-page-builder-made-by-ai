@@ -5,20 +5,21 @@ import "../../styles/LandingPage.css";
 const LandingPage = () => {
   return (
     <div className="landing-page">
-      <header className="landing-header">
-        <div className="container">
-          <div className="logo">Page Builder</div>
-          <nav className="nav">
-            <a href="#features">Features</a>
-            <a href="#how-it-works">How It Works</a>
-            <Link to="/auth" className="nav-button">
-              Sign In
-            </Link>
-          </nav>
-        </div>
-      </header>
-
       <section className="hero">
+        
+        <header className="landing-header">
+          <div className="container">
+            <div className="logo">Page Builder</div>
+            <nav className="nav">
+              <a href="#features">Features</a>
+              <a href="#how-it-works">How It Works</a>
+              <Link to="/auth" className="nav-button">
+                Sign In
+              </Link>
+            </nav>
+          </div>
+        </header>
+
         <div className="hero-bg"></div>
         <div className="container">
           <div className="hero-content">
