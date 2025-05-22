@@ -3,8 +3,9 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f7f9;
+  background-color: #050a18;
   overflow-y: auto;
+  color: #f2f2f2;
 }
 
 .welcome-header {
@@ -12,29 +13,29 @@
   justify-content: space-between;
   align-items: center;
   padding: 20px 40px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: #091433;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .welcome-title h1 {
   font-size: 24px;
-  color: #1890ff;
+  color: #58a6ff;
   margin: 0;
 }
 
 .welcome-title p {
   margin: 5px 0 0;
   font-size: 14px;
-  color: #666;
+  color: #f2f2f2;
 }
 
 .logout-button {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: none;
-  border: none;
-  color: #555;
+  background: rgba(88, 166, 255, 0.1);
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  color: #58a6ff;
   font-size: 14px;
   cursor: pointer;
   padding: 8px 12px;
@@ -43,26 +44,29 @@
 }
 
 .logout-button:hover {
-  background-color: #f0f0f0;
+  background-color: rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(88, 166, 255, 0.2);
 }
 
 .welcome-content {
   flex: 1;
   padding: 40px;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding-left: 40px;
+  margin: 0;
   width: 100%;
 }
 
 .start-section,
 .recent-section {
   margin-bottom: 40px;
+  margin-left: 0;
 }
 
 .start-section h2,
 .recent-section h2 {
   font-size: 20px;
-  color: #333;
+  color: #ffffff;
   margin-bottom: 20px;
   font-weight: 500;
 }
@@ -77,35 +81,37 @@
   display: flex;
   align-items: center;
   padding: 20px;
-  background-color: #ffffff;
+  background-color: rgba(9, 20, 51, 0.7);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   width: 300px;
+  border: 1px solid rgba(88, 166, 255, 0.1);
 }
 
 .action-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.3);
 }
 
 .action-icon {
   font-size: 24px;
-  color: #1890ff;
+  color: #58a6ff;
   margin-right: 16px;
 }
 
 .action-details h3 {
   margin: 0 0 5px;
   font-size: 16px;
-  color: #333;
+  color: #ffffff;
 }
 
 .action-details p {
   margin: 0;
   font-size: 14px;
-  color: #666;
+  color: #a0b3d8;
 }
 
 .pages-list {
@@ -118,34 +124,36 @@
   display: flex;
   align-items: center;
   padding: 16px;
-  background-color: #ffffff;
+  background-color: rgba(9, 20, 51, 0.7);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid rgba(88, 166, 255, 0.1);
 }
 
 .page-item:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 20px rgba(88, 166, 255, 0.2);
+  border-color: rgba(88, 166, 255, 0.3);
 }
 
 .page-icon {
   font-size: 24px;
-  color: #1890ff;
+  color: #58a6ff;
   margin-right: 16px;
 }
 
 .page-details h3 {
   margin: 0 0 5px;
   font-size: 16px;
-  color: #333;
+  color: #ffffff;
 }
 
 .page-details p {
   margin: 0;
   font-size: 14px;
-  color: #999;
+  color: #a0b3d8;
 }
 
 .loading-message,
@@ -156,10 +164,11 @@
   justify-content: center;
   padding: 40px;
   text-align: center;
-  color: #666;
-  background-color: #ffffff;
+  color: #f2f2f2;
+  background-color: rgba(9, 20, 51, 0.7);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(88, 166, 255, 0.1);
 }
 
 .empty-message p {
@@ -167,33 +176,38 @@
 }
 
 .button-primary {
-  background-color: #1890ff;
+  background-color: #58a6ff;
   color: white;
   border: none;
   padding: 10px 16px;
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .button-primary:hover {
-  background-color: #0c7fd9;
+  background-color: #3a7bd5;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(88, 166, 255, 0.3);
 }
 
 .button-secondary {
-  background-color: #f5f5f5;
-  color: #333;
-  border: 1px solid #d9d9d9;
+  background-color: rgba(88, 166, 255, 0.1);
+  color: #f2f2f2;
+  border: 1px solid rgba(88, 166, 255, 0.3);
   padding: 10px 16px;
   border-radius: 4px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.3s ease;
 }
 
 .button-secondary:hover {
-  background-color: #e8e8e8;
+  background-color: rgba(88, 166, 255, 0.2);
+  transform: translateY(-2px);
 }
 
 /* Modal styles */
@@ -203,7 +217,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(5, 10, 24, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -211,19 +225,21 @@
 }
 
 .modal-content {
-  background-color: #ffffff;
+  background-color: #091433;
   border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   padding: 24px;
   width: 400px;
   max-width: 90%;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  color: #f2f2f2;
 }
 
 .modal-content h3 {
   margin-top: 0;
   margin-bottom: 20px;
   font-size: 18px;
-  color: #333;
+  color: #ffffff;
 }
 
 .modal-actions {
@@ -234,12 +250,13 @@
 }
 
 .error-message {
-  background-color: #ffebee;
-  color: #d32f2f;
+  background-color: rgba(211, 47, 47, 0.2);
+  color: #ff6b6b;
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 20px;
   font-size: 14px;
+  border: 1px solid rgba(211, 47, 47, 0.3);
 }
 
 .global-error {
@@ -248,14 +265,45 @@
 }
 
 .close-error-btn {
-  position: absolute;
-  right: 10px;
-  top: 10px;
   background: none;
   border: none;
-  color: #d32f2f;
-  font-size: 18px;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  color: #ff6b6b;
   cursor: pointer;
+  font-size: 16px;
   padding: 0;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #a0b3d8;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid rgba(88, 166, 255, 0.3);
+  background-color: rgba(9, 20, 51, 0.5);
+  color: #f2f2f2;
+  font-size: 14px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #58a6ff;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
 }

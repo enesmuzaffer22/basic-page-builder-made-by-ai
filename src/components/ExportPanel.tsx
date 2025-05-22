@@ -125,9 +125,12 @@ ${css}
     <div
       style={{
         padding: "16px",
-        borderTop: "1px solid #ddd",
-        background: "#f8f8f8",
+        borderTop: "1px solid rgba(88, 166, 255, 0.2)",
+        background: "#091433",
+        maxHeight: "40vh",
+        overflowY: "auto",
       }}
+      className="export-panel"
     >
       <div style={{ marginBottom: "15px" }}>
         <h3
@@ -135,7 +138,7 @@ ${css}
             marginBottom: "10px",
             textAlign: "center",
             fontSize: "18px",
-            color: "#333",
+            color: "#58a6ff",
           }}
         >
           Add Element
@@ -147,7 +150,10 @@ ${css}
             gap: "6px",
             justifyContent: "center",
             marginBottom: "20px",
+            maxHeight: "300px",
+            overflowY: "auto",
           }}
+          className="elements-container"
         >
           {AVAILABLE_ELEMENTS.map(({ type, label }) => (
             <button
@@ -155,12 +161,12 @@ ${css}
               onClick={() => handleAddElement(type)}
               style={{
                 padding: "8px 10px",
-                background: "#fff",
-                border: "1px solid #ddd",
+                background: "rgba(9, 20, 51, 0.7)",
+                border: "1px solid rgba(88, 166, 255, 0.2)",
                 borderRadius: "4px",
                 cursor: "pointer",
                 margin: "2px",
-                color: "#333",
+                color: "#f2f2f2",
                 fontSize: "13px",
                 minWidth: "120px",
                 textAlign: "center",
@@ -170,16 +176,22 @@ ${css}
                 justifyContent: "center",
                 gap: "8px",
                 height: "36px",
-                boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+                boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
                 transition: "all 0.2s ease",
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.boxShadow = "0 2px 5px rgba(0,0,0,0.15)";
-                e.currentTarget.style.borderColor = "#1890ff";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 10px rgba(88, 166, 255, 0.2)";
+                e.currentTarget.style.borderColor = "#58a6ff";
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.backgroundColor =
+                  "rgba(88, 166, 255, 0.1)";
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.08)";
-                e.currentTarget.style.borderColor = "#ddd";
+                e.currentTarget.style.boxShadow = "0 1px 2px rgba(0,0,0,0.15)";
+                e.currentTarget.style.borderColor = "rgba(88, 166, 255, 0.2)";
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.backgroundColor = "rgba(9, 20, 51, 0.7)";
               }}
             >
               <span
@@ -190,7 +202,7 @@ ${css}
                   justifyContent: "center",
                   width: "20px",
                   height: "20px",
-                  color: "#1890ff",
+                  color: "#58a6ff",
                 }}
               >
                 {getElementIcon(type)}
@@ -204,25 +216,20 @@ ${css}
       <div style={{ display: "flex", justifyContent: "center" }}>
         <button
           onClick={handleViewInNewTab}
+          className="primary-button"
           style={{
             padding: "12px 24px",
-            background: "#1890ff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
             fontSize: "16px",
             fontWeight: "bold",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            transition: "all 0.2s ease",
           }}
           onMouseOver={(e) => {
-            e.currentTarget.style.background = "#40a9ff";
-            e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.15)";
+            e.currentTarget.style.boxShadow =
+              "0 4px 10px rgba(88, 166, 255, 0.3)";
+            e.currentTarget.style.transform = "translateY(-2px)";
           }}
           onMouseOut={(e) => {
-            e.currentTarget.style.background = "#1890ff";
-            e.currentTarget.style.boxShadow = "0 2px 4px rgba(0,0,0,0.1)";
+            e.currentTarget.style.boxShadow = "";
+            e.currentTarget.style.transform = "";
           }}
         >
           View Generated Code

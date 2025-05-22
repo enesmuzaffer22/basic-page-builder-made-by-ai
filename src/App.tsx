@@ -43,12 +43,16 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 function App() {
   const { user } = useAuthStore();
-  const { currentPageId, updatePage } = usePagesStore();
+  const { currentPageId, updatePage, pages } = usePagesStore();
   const navigate = useNavigate();
   const location = useLocation();
   const [pageLoading, setPageLoading] = useState(false);
   const undo = usePageBuilderStore((state) => state.undo);
   const redo = usePageBuilderStore((state) => state.redo);
+
+  // Get current page title
+  const currentPage = pages.find((page) => page.id === currentPageId);
+  const currentPageTitle = currentPage?.title || "";
 
   // If user is logged in but not on a specific page, redirect to dashboard
   useEffect(() => {
@@ -155,23 +159,14 @@ function App() {
                       justifyContent: "space-between",
                     }}
                   >
-                    <h1 style={{ margin: 0 }}>Basic Page Builder</h1>
+                    <h1 style={{ margin: 0 }}>
+                      Page Builder - {currentPageTitle}
+                    </h1>
                     <div style={{ display: "flex", gap: "8px" }}>
                       <button
                         aria-label="Undo"
                         className="undo-btn"
                         onClick={undo}
-                        style={{
-                          background: "white",
-                          color: "#1890ff",
-                          border: "none",
-                          borderRadius: "4px",
-                          padding: "6px 12px",
-                          fontSize: "18px",
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-                        }}
                       >
                         <span
                           style={{
@@ -186,17 +181,6 @@ function App() {
                         aria-label="Redo"
                         className="redo-btn"
                         onClick={redo}
-                        style={{
-                          background: "white",
-                          color: "#1890ff",
-                          border: "none",
-                          borderRadius: "4px",
-                          padding: "6px 12px",
-                          fontSize: "18px",
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                          boxShadow: "0 1px 4px rgba(0,0,0,0.08)",
-                        }}
                       >
                         ↻
                       </button>

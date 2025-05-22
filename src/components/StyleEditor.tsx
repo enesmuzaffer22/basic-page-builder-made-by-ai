@@ -74,7 +74,15 @@ const MeasurementInput: React.FC<MeasurementInputProps> = ({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder || "e.g. 10px 20px 15px"}
-        style={{ width: "100%", padding: "8px" }}
+        style={{
+          width: "100%",
+          padding: "8px",
+          backgroundColor: "rgba(9, 20, 51, 0.7)",
+          color: "#f2f2f2",
+          border: "1px solid rgba(88, 166, 255, 0.3)",
+          borderRadius: "4px",
+          outline: "none",
+        }}
       />
     );
   }
@@ -118,12 +126,28 @@ const MeasurementInput: React.FC<MeasurementInputProps> = ({
         value={parsed.value}
         onChange={handleValueChange}
         placeholder={placeholder || "Value"}
-        style={{ flex: 1, padding: "8px" }}
+        style={{
+          flex: 1,
+          padding: "8px",
+          backgroundColor: "rgba(9, 20, 51, 0.7)",
+          color: "#f2f2f2",
+          border: "1px solid rgba(88, 166, 255, 0.3)",
+          borderRadius: "4px",
+          outline: "none",
+        }}
       />
       <select
         value={selectedUnit}
         onChange={handleUnitChange}
-        style={{ width: "70px", padding: "8px" }}
+        style={{
+          width: "70px",
+          padding: "8px",
+          backgroundColor: "rgba(9, 20, 51, 0.7)",
+          color: "#f2f2f2",
+          border: "1px solid rgba(88, 166, 255, 0.3)",
+          borderRadius: "4px",
+          outline: "none",
+        }}
       >
         {CSS_UNITS.map((u) => (
           <option key={u || "empty-unit"} value={u}>
@@ -153,7 +177,10 @@ const StyleEditor: React.FC = () => {
 
   if (!selectedElementId) {
     return (
-      <div className="style-editor-panel" style={{ boxSizing: "border-box" }}>
+      <div
+        className="style-editor-panel"
+        style={{ boxSizing: "border-box", paddingBottom: "30px" }}
+      >
         <p>Select an element to edit its style</p>
       </div>
     );
@@ -317,8 +344,11 @@ const StyleEditor: React.FC = () => {
   const displayName = isGroup ? groupName : content;
 
   return (
-    <div className="style-editor-panel" style={{ boxSizing: "border-box" }}>
-      <h3>Style Editor - {type}</h3>
+    <div
+      className="style-editor-panel"
+      style={{ boxSizing: "border-box", paddingBottom: "30px" }}
+    >
+      <h2>Style Editor - {type}</h2>
 
       {/* Element name editor for divs and groups */}
       {(type === "div" || isGroup) && (
@@ -330,7 +360,15 @@ const StyleEditor: React.FC = () => {
             type="text"
             value={displayName || ""}
             onChange={handleNameChange}
-            style={{ width: "100%", padding: "8px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              color: "#f2f2f2",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+              outline: "none",
+            }}
             placeholder={isGroup ? "Group Name" : "Div Name"}
           />
         </div>
@@ -351,7 +389,16 @@ const StyleEditor: React.FC = () => {
           <textarea
             value={content || ""}
             onChange={handleContentChange}
-            style={{ width: "100%", padding: "8px", minHeight: "60px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              minHeight: "60px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              color: "#f2f2f2",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+              outline: "none",
+            }}
           />
         </div>
       )}
@@ -386,12 +433,16 @@ const StyleEditor: React.FC = () => {
                       disabled={index === 0}
                       style={{
                         padding: "4px",
-                        background: index === 0 ? "#f0f0f0" : "#e6f7ff",
-                        border: "1px solid #d9d9d9",
+                        background:
+                          index === 0
+                            ? "rgba(9, 20, 51, 0.5)"
+                            : "rgba(88, 166, 255, 0.2)",
+                        border: "1px solid rgba(88, 166, 255, 0.3)",
                         cursor: index === 0 ? "default" : "pointer",
                         borderRadius: "4px 4px 0 0",
                         fontSize: "12px",
                         fontWeight: "bold",
+                        color: "#f2f2f2",
                       }}
                     >
                       ▲
@@ -403,9 +454,9 @@ const StyleEditor: React.FC = () => {
                         padding: "4px",
                         background:
                           index === listItems.length - 1
-                            ? "#f0f0f0"
-                            : "#e6f7ff",
-                        border: "1px solid #d9d9d9",
+                            ? "rgba(9, 20, 51, 0.5)"
+                            : "rgba(88, 166, 255, 0.2)",
+                        border: "1px solid rgba(88, 166, 255, 0.3)",
                         cursor:
                           index === listItems.length - 1
                             ? "default"
@@ -414,6 +465,7 @@ const StyleEditor: React.FC = () => {
                         borderTop: "none",
                         fontSize: "12px",
                         fontWeight: "bold",
+                        color: "#f2f2f2",
                       }}
                     >
                       ▼
@@ -428,7 +480,15 @@ const StyleEditor: React.FC = () => {
                     onChange={(e) =>
                       handleUpdateListItem(index, e.target.value)
                     }
-                    style={{ flex: 1, padding: "8px" }}
+                    style={{
+                      flex: 1,
+                      padding: "8px",
+                      backgroundColor: "rgba(9, 20, 51, 0.7)",
+                      color: "#f2f2f2",
+                      border: "1px solid rgba(88, 166, 255, 0.3)",
+                      borderRadius: "4px",
+                      outline: "none",
+                    }}
                   />
                   <button
                     onClick={() => handleDeleteListItem(index)}
@@ -439,6 +499,16 @@ const StyleEditor: React.FC = () => {
                       border: "none",
                       borderRadius: "4px",
                       cursor: "pointer",
+                      boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3)",
+                      transition: "all 0.2s",
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.background = "#ff7875";
+                      e.currentTarget.style.transform = "translateY(-1px)";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.background = "#ff4d4f";
+                      e.currentTarget.style.transform = "translateY(0)";
                     }}
                   >
                     ✕
@@ -457,17 +527,22 @@ const StyleEditor: React.FC = () => {
               value={newListItem}
               onChange={(e) => setNewListItem(e.target.value)}
               placeholder="New list item"
-              style={{ flex: 1, padding: "8px", marginRight: "8px" }}
+              style={{
+                flex: 1,
+                padding: "8px",
+                marginRight: "8px",
+                backgroundColor: "rgba(9, 20, 51, 0.7)",
+                color: "#f2f2f2",
+                border: "1px solid rgba(88, 166, 255, 0.3)",
+                borderRadius: "4px",
+                outline: "none",
+              }}
             />
             <button
               onClick={handleAddListItem}
+              className="primary-button"
               style={{
                 padding: "8px 16px",
-                background: "#1890ff",
-                color: "white",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
               }}
             >
               Add Item
@@ -487,7 +562,15 @@ const StyleEditor: React.FC = () => {
           <select
             value={style.display || "flex"}
             onChange={(e) => handleStyleChange("display", e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              color: "#f2f2f2",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+              outline: "none",
+            }}
           >
             <option value="flex">Flex</option>
             <option value="block">Block</option>
@@ -511,7 +594,15 @@ const StyleEditor: React.FC = () => {
                     e.target.value as FlexDirection
                   )
                 }
-                style={{ width: "100%", padding: "8px" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  color: "#f2f2f2",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                  outline: "none",
+                }}
               >
                 <option value="row">Row</option>
                 <option value="column">Column</option>
@@ -530,7 +621,15 @@ const StyleEditor: React.FC = () => {
                     e.target.value as JustifyContent
                   )
                 }
-                style={{ width: "100%", padding: "8px" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  color: "#f2f2f2",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                  outline: "none",
+                }}
               >
                 <option value="flex-start">Flex Start</option>
                 <option value="flex-end">Flex End</option>
@@ -550,7 +649,15 @@ const StyleEditor: React.FC = () => {
                 onChange={(e) =>
                   handleStyleChange("alignItems", e.target.value as AlignItems)
                 }
-                style={{ width: "100%", padding: "8px" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  color: "#f2f2f2",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                  outline: "none",
+                }}
               >
                 <option value="flex-start">Flex Start</option>
                 <option value="flex-end">Flex End</option>
@@ -569,7 +676,15 @@ const StyleEditor: React.FC = () => {
                 onChange={(e) =>
                   handleStyleChange("flexWrap", e.target.value as FlexWrap)
                 }
-                style={{ width: "100%", padding: "8px" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  color: "#f2f2f2",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                  outline: "none",
+                }}
               >
                 <option value="nowrap">No Wrap</option>
                 <option value="wrap">Wrap</option>
@@ -834,7 +949,13 @@ const StyleEditor: React.FC = () => {
             onChange={(e) =>
               handleStyleChange("backgroundColor", e.target.value)
             }
-            style={{ width: "100%", padding: "4px" }}
+            style={{
+              width: "100%",
+              padding: "4px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+            }}
           />
         </div>
 
@@ -846,7 +967,13 @@ const StyleEditor: React.FC = () => {
             type="color"
             value={style.color || "#000000"}
             onChange={(e) => handleStyleChange("color", e.target.value)}
-            style={{ width: "100%", padding: "4px" }}
+            style={{
+              width: "100%",
+              padding: "4px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+            }}
           />
         </div>
 
@@ -868,7 +995,15 @@ const StyleEditor: React.FC = () => {
           <select
             value={style.fontWeight || ""}
             onChange={(e) => handleStyleChange("fontWeight", e.target.value)}
-            style={{ width: "100%", padding: "8px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              color: "#f2f2f2",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+              outline: "none",
+            }}
           >
             <option value="">Default</option>
             <option value="normal">Normal</option>
@@ -897,7 +1032,15 @@ const StyleEditor: React.FC = () => {
                 e.target.value as "left" | "center" | "right" | "justify"
               )
             }
-            style={{ width: "100%", padding: "8px" }}
+            style={{
+              width: "100%",
+              padding: "8px",
+              backgroundColor: "rgba(9, 20, 51, 0.7)",
+              color: "#f2f2f2",
+              border: "1px solid rgba(88, 166, 255, 0.3)",
+              borderRadius: "4px",
+              outline: "none",
+            }}
           >
             <option value="">Default</option>
             <option value="left">Left</option>
@@ -957,7 +1100,15 @@ const StyleEditor: React.FC = () => {
                 onChange={(e) =>
                   handleStyleChange("borderStyle", e.target.value)
                 }
-                style={{ width: "100%", padding: "8px" }}
+                style={{
+                  width: "100%",
+                  padding: "8px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  color: "#f2f2f2",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                  outline: "none",
+                }}
               >
                 <option value="">Default</option>
                 <option value="none">None</option>
@@ -987,7 +1138,13 @@ const StyleEditor: React.FC = () => {
                 onChange={(e) =>
                   handleStyleChange("borderColor", e.target.value)
                 }
-                style={{ width: "100%", padding: "4px" }}
+                style={{
+                  width: "100%",
+                  padding: "4px",
+                  backgroundColor: "rgba(9, 20, 51, 0.7)",
+                  border: "1px solid rgba(88, 166, 255, 0.3)",
+                  borderRadius: "4px",
+                }}
               />
             </div>
           </div>
@@ -1007,7 +1164,15 @@ const StyleEditor: React.FC = () => {
               value={style.border || ""}
               onChange={(e) => handleStyleChange("border", e.target.value)}
               placeholder="e.g. 1px solid black"
-              style={{ width: "100%", padding: "8px" }}
+              style={{
+                width: "100%",
+                padding: "8px",
+                backgroundColor: "rgba(9, 20, 51, 0.7)",
+                color: "#f2f2f2",
+                border: "1px solid rgba(88, 166, 255, 0.3)",
+                borderRadius: "4px",
+                outline: "none",
+              }}
             />
           </div>
         </div>

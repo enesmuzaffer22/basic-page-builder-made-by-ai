@@ -93,14 +93,31 @@ button:focus-visible {
 }
 
 ::-webkit-scrollbar-track {
-  background: #161b22;
+  background: #f0f0f0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #30363d;
+  background: #c0c0c0;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #58a6ff;
+  background: #a0a0a0;
+}
+
+/* Input field styling */
+input,
+textarea,
+select {
+  background-color: white;
+  color: black;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #999;
+  outline: none;
 }

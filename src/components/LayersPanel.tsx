@@ -142,19 +142,20 @@ const LayersPanel: React.FC = () => {
     return (
       <div
         style={{
-          width: "300px",
+          width: "350px",
           height: "100%",
-          borderRight: "1px solid #ddd",
+          borderRight: "1px solid rgba(88, 166, 255, 0.2)",
           display: "flex",
           flexDirection: "column",
           padding: "16px",
-          background: "#f5f5f5",
+          background: "#091433",
           justifyContent: "center",
           alignItems: "center",
         }}
+        className="layers-panel"
       >
-        <h2>Layers</h2>
-        <div>Loading page content...</div>
+        <h2 style={{ color: "#58a6ff", marginBottom: "16px" }}>Layers</h2>
+        <div style={{ color: "#f2f2f2" }}>Loading page content...</div>
       </div>
     );
   }
@@ -165,19 +166,22 @@ const LayersPanel: React.FC = () => {
     return (
       <div
         style={{
-          width: "300px",
+          width: "350px",
           height: "100%",
-          borderRight: "1px solid #ddd",
+          borderRight: "1px solid rgba(88, 166, 255, 0.2)",
           display: "flex",
           flexDirection: "column",
           padding: "16px",
-          background: "#f5f5f5",
+          background: "#091433",
           justifyContent: "center",
           alignItems: "center",
         }}
+        className="layers-panel"
       >
-        <h2>Layers</h2>
-        <div>Error: Root element not found. Please reload the page.</div>
+        <h2 style={{ color: "#58a6ff", marginBottom: "16px" }}>Layers</h2>
+        <div style={{ color: "#f2f2f2" }}>
+          Error: Root element not found. Please reload the page.
+        </div>
       </div>
     );
   }
@@ -460,9 +464,9 @@ const LayersPanel: React.FC = () => {
           marginBottom: "1px",
           marginTop: isLast ? "2px" : "1px",
           backgroundColor: isActive
-            ? "rgba(24, 144, 255, 0.7)"
+            ? "rgba(88, 166, 255, 0.7)"
             : isDragging
-            ? "rgba(24, 144, 255, 0.1)"
+            ? "rgba(88, 166, 255, 0.1)"
             : "transparent",
           transition: "all 0.15s ease",
           position: "relative",
@@ -480,8 +484,8 @@ const LayersPanel: React.FC = () => {
               transform: "translateY(-50%)",
               width: "100%",
               height: "2px",
-              backgroundColor: "#1890ff",
-              boxShadow: "0px 0px 3px rgba(24, 144, 255, 0.5)",
+              backgroundColor: "#58a6ff",
+              boxShadow: "0px 0px 3px rgba(88, 166, 255, 0.5)",
             }}
           />
         )}
@@ -548,21 +552,21 @@ const LayersPanel: React.FC = () => {
           style={{
             padding: "4px 8px",
             backgroundColor: isSelected
-              ? "#e6f7ff"
+              ? "rgba(88, 166, 255, 0.2)"
               : isDragged
-              ? "rgba(24, 144, 255, 0.2)"
+              ? "rgba(88, 166, 255, 0.2)"
               : hoveredElementId === element.id
-              ? "rgba(24, 144, 255, 0.1)"
+              ? "rgba(88, 166, 255, 0.1)"
               : dropTargetInfo.parentId === element.id
-              ? "rgba(24, 144, 255, 0.1)"
-              : "transparent",
+              ? "rgba(88, 166, 255, 0.1)"
+              : "rgba(9, 20, 51, 0.7)",
             border: isMultiSelected
-              ? "1px dashed #1890ff"
+              ? "1px dashed #58a6ff"
               : isDragged
-              ? "1px solid #1890ff"
+              ? "1px solid #58a6ff"
               : hoveredElementId === element.id
-              ? "1px solid rgba(24, 144, 255, 0.5)"
-              : "1px solid transparent",
+              ? "1px solid rgba(88, 166, 255, 0.5)"
+              : "1px solid rgba(88, 166, 255, 0.1)",
             marginBottom: "2px",
             display: "flex",
             justifyContent: "space-between",
@@ -582,7 +586,9 @@ const LayersPanel: React.FC = () => {
               hoveredElementId === element.id && draggedElementId
                 ? "translateX(3px)"
                 : "translateX(0)",
+            color: "#f2f2f2",
           }}
+          className="layer-item"
           onClick={(e) =>
             handleElementSelect(element.id, e.ctrlKey || e.metaKey)
           }
@@ -602,22 +608,23 @@ const LayersPanel: React.FC = () => {
             <span
               style={{
                 padding: "2px 4px",
-                backgroundColor: "#eee",
+                backgroundColor: "#050a18",
                 borderRadius: "3px",
                 fontSize: "12px",
-                color: "#333",
+                color: "#a0b3d8",
                 display: "flex",
                 alignItems: "center",
                 gap: "4px",
                 flexShrink: 0,
                 height: "20px",
+                border: "1px solid rgba(88, 166, 255, 0.2)",
               }}
             >
               <span className="element-icon">{icon}</span>
               {element.id !== rootElementId && (
                 <FaArrowsUpDownLeftRight
                   size={10}
-                  style={{ marginLeft: "2px" }}
+                  style={{ marginLeft: "2px", color: "#58a6ff" }}
                 />
               )}
             </span>
@@ -640,11 +647,13 @@ const LayersPanel: React.FC = () => {
               <span
                 style={{
                   fontSize: "12px",
-                  color: "#666",
+                  color: "#a0b3d8",
                   fontStyle: "italic",
                   flexGrow: 1,
                   paddingLeft: "4px",
-                  borderLeft: contentPreview ? "1px solid #ddd" : "none",
+                  borderLeft: contentPreview
+                    ? "1px solid rgba(88, 166, 255, 0.2)"
+                    : "none",
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -676,7 +685,7 @@ const LayersPanel: React.FC = () => {
                 top: "0",
                 bottom: "8px",
                 width: "2px",
-                backgroundColor: "#e8e8e8",
+                backgroundColor: "rgba(88, 166, 255, 0.3)",
               }}
             />
 
@@ -707,30 +716,26 @@ const LayersPanel: React.FC = () => {
       tabIndex={0}
       onKeyDown={handleKeyDown}
       style={{
-        width: "300px",
+        width: "350px",
         height: "100%",
-        borderRight: "1px solid #ddd",
+        borderRight: "1px solid rgba(88, 166, 255, 0.2)",
         display: "flex",
         flexDirection: "column",
         padding: "16px 12px",
-        background: "#f5f5f5",
+        background: "#091433",
         overflowY: "auto",
         overflowX: "auto",
         outline: "none",
       }}
+      className="layers-panel"
     >
-      <h2>Layers</h2>
+      <h2 style={{ color: "#58a6ff", marginBottom: "16px" }}>Layers</h2>
 
       {selectedElements.length >= 2 && (
         <button
           onClick={handleGroupElements}
+          className="primary-button"
           style={{
-            padding: "8px",
-            background: "#1890ff",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
             marginBottom: "16px",
           }}
         >
@@ -746,8 +751,9 @@ const LayersPanel: React.FC = () => {
           width: "100%",
           paddingRight: "8px",
         }}
+        className="layers-tree-container"
       >
-        <h3>Structure</h3>
+        <h3 style={{ color: "#f2f2f2", marginBottom: "12px" }}>Structure</h3>
         {renderElementTree(rootElementId)}
       </div>
 
@@ -758,11 +764,12 @@ const LayersPanel: React.FC = () => {
             position: "fixed",
             top: contextMenu.y,
             left: contextMenu.x,
-            backgroundColor: "white",
-            boxShadow: "0 2px 10px rgba(0,0,0,0.2)",
+            backgroundColor: "#091433",
+            boxShadow: "0 2px 10px rgba(0,0,0,0.5)",
             borderRadius: "4px",
             padding: "8px 0",
             zIndex: 1000,
+            border: "1px solid rgba(88, 166, 255, 0.3)",
           }}
         >
           <div
@@ -777,6 +784,14 @@ const LayersPanel: React.FC = () => {
               display: "flex",
               alignItems: "center",
               gap: "8px",
+              color: "#f2f2f2",
+              transition: "all 0.2s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "rgba(88, 166, 255, 0.1)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "transparent";
             }}
           >
             <span style={{ color: "#ff4d4f" }}>Delete</span>
