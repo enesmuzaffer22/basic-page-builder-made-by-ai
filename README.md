@@ -1,6 +1,6 @@
 # Basic Page Builder
 
-A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, it features an accessible interface and real-time preview for anyone who wants to design web pages.
+A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, this drag-and-drop editor features a responsive interface with real-time preview for creating modern web pages.
 
 ## AI Development
 
@@ -13,17 +13,35 @@ The AI assistance was used to help design the architecture, implement features, 
 
 ## Features
 
-- **Two-Panel Interface**: Layers panel and preview screen
-- **Layers Panel**: View and organize your page elements hierarchically
-- **Preview Screen**: See your changes in real-time
-- **Style Editor**: Comprehensive customization options
-- **Flex-based Layout System**: Compatible with modern web design
-- **Element Adding**: Headings, paragraphs, divs, buttons, links, and more
-- **Element Grouping**: Combine elements and manage them as a group
-- **Naming**: Give custom names to any element or group
-- **Nesting**: Easily nest elements within each other
-- **Flex Properties**: Control direction, alignment, and distribution
-- **Export**: Export your HTML and CSS code
+- **Dual-Panel Interface**:
+  - **Layers Panel**: Hierarchical view of all page elements
+  - **Preview Screen**: Real-time visualization of your design
+- **Advanced Element Management**:
+  - Add various HTML elements (headings, paragraphs, divs, buttons, links, etc.)
+  - Group elements for easier management
+  - Custom naming for better organization
+  - Nested element support for complex layouts
+- **Style Controls**:
+  - Comprehensive style editor with visual controls
+  - Flexbox layout management (direction, alignment, distribution, wrapping)
+  - Complete box model control (width, height, margin, padding)
+  - Detailed typography settings
+  - Color management
+  - Border styling
+- **Export Options**:
+  - Export clean HTML code
+  - Export optimized CSS
+  - Export complete web page
+- **Project Management**:
+
+  - Save and manage multiple page projects
+  - User authentication
+  - Project dashboard
+
+- **Additional Features**:
+  - Undo/redo functionality
+  - Keyboard shortcuts
+  - Responsive design tools
 
 ## Getting Started
 
@@ -59,36 +77,41 @@ yarn dev
 
 ## How to Use
 
+### Creating Pages
+
+1. **Sign in** to your account
+2. Navigate to the **Dashboard**
+3. Create a **New Page** or select an existing one
+4. Use the **Editor** to design your page
+
 ### Adding and Editing Elements
 
-1. **Add Elements**: Click on the appropriate element type in the layers panel to add a new element.
-2. **Select Elements**: Click on an element in the preview screen or in the layers panel to select it.
-3. **Edit Content**: Use the style editor to change text content.
-4. **Delete Elements**: Click on the "Delete" button next to an element to remove it.
+1. **Add Elements**: Select element types from the layers panel
+2. **Select Elements**: Click on any element in the preview or layers panel
+3. **Edit Content**: Modify text content directly in the style editor
+4. **Remove Elements**: Use the delete button in the element controls
 
-### Grouping and Editing
+### Styling Elements
 
-1. **Group Elements**: Hold Ctrl/Cmd while clicking on elements to select multiple, then click the "Group Selected Elements" button.
-2. **Name Groups**: You can give custom names to groups and divs in the style editor.
-3. **Edit Group Content**: Groups behave like other elements and can be edited.
+Use the comprehensive Style Editor to adjust:
 
-### Style Editing
+- **Layout**: Type, direction, alignment, wrapping
+- **Box Model**: Width, height, margin, padding
+- **Typography**: Font, size, weight, style, alignment
+- **Appearance**: Colors, backgrounds, borders
+- **Position**: Relative, absolute positioning
 
-Use the style editor to change the following properties:
+### Organizing Elements
 
-- **Layout Type**: Flex, block, inline, etc.
-- **Flex Properties**: Direction, alignment, distribution, wrap
-- **Box Model**: Width, height, padding, margin
-- **Visual Properties**: Colors, fonts, borders
-- **Text Properties**: Font size, weight, alignment
+1. **Group Elements**: Select multiple elements and use the group function
+2. **Name Elements**: Give descriptive names to elements and groups
+3. **Reorder Elements**: Drag and drop in the layers panel
 
-### Exporting
+### Exporting Your Work
 
-You can export your projects in different formats:
-
-- HTML code
-- CSS code
-- Complete web page (HTML + CSS)
+1. Navigate to the **Export Panel**
+2. Choose your export format (HTML, CSS, or complete page)
+3. Copy the code or download the files
 
 ## Project Structure
 
@@ -96,14 +119,19 @@ You can export your projects in different formats:
 basic-page-builder/
 ├── src/
 │   ├── components/            # React components
-│   │   ├── LayersPanel.tsx    # Layers panel
-│   │   ├── PreviewScreen.tsx  # Preview screen
-│   │   ├── StyleEditor.tsx    # Style editor
-│   │   └── ExportPanel.tsx    # Export panel
+│   │   ├── LayersPanel.tsx    # Layers panel component
+│   │   ├── PreviewScreen.tsx  # Preview screen component
+│   │   ├── StyleEditor.tsx    # Style editor component
+│   │   ├── ExportPanel.tsx    # Export functionality
+│   │   ├── Auth/              # Authentication components
+│   │   ├── Dashboard/         # Project management components
+│   │   └── LandingPage/       # Landing page components
 │   ├── store/                 # State management
-│   │   └── pageBuilderStore.ts # Zustand store
+│   │   ├── pageBuilderStore.ts # Element styling and structure
+│   │   ├── authStore.ts       # Authentication state
+│   │   └── pagesStore.ts      # Page management
 │   ├── types/                 # TypeScript definitions
-│   │   └── index.ts           # Type definitions
+│   ├── firebase/              # Firebase integration
 │   ├── App.tsx                # Main application component
 │   └── main.tsx               # Application entry point
 └── public/                    # Static assets
@@ -111,16 +139,13 @@ basic-page-builder/
 
 ## Technologies Used
 
-- [React 19](https://react.dev/) - User interface
+- [React 19](https://react.dev/) - User interface library
 - [TypeScript](https://www.typescriptlang.org/) - Type safety
 - [Zustand](https://github.com/pmndrs/zustand) - State management
-- [React Icons](https://react-icons.github.io/react-icons/) - Icons
+- [React Router](https://reactrouter.com/) - Navigation
+- [Firebase](https://firebase.google.com/) - Authentication and storage
 - [UUID](https://github.com/uuidjs/uuid) - Unique ID generation
-- [Vite](https://vitejs.dev/) - Development tool
-
-## Developer Notes
-
-This project is designed to allow users without web development skills to easily create web pages. Currently, basic features are available, and more element types, customization options, and template support will be added in the future.
+- [Vite](https://vitejs.dev/) - Build tool and development server
 
 ## License
 
