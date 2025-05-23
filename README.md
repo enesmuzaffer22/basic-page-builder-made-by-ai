@@ -1,4 +1,4 @@
-# Basic Page Builder
+# Page Builder
 
 A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, this drag-and-drop editor features a real-time preview interface for creating modern web pages.
 
@@ -152,4 +152,4 @@ This project is licensed under the MIT License.
 
 ---
 
-© 2024 Basic Page Builder
+© 2024 Page Builder
