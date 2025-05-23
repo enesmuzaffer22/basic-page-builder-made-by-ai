@@ -1,25 +1,77 @@
 import { Link } from "react-router-dom";
-import { FiLayers, FiCode, FiSmile, FiEdit, FiCpu } from "react-icons/fi";
+import {
+  FiLayers,
+  FiCode,
+  FiSmile,
+  FiEdit,
+  FiCpu,
+  FiMenu,
+  FiX,
+} from "react-icons/fi";
+import { useState } from "react";
 import "../../styles/LandingPage.css";
 
 const LandingPage = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <div className="landing-page">
+      {" "}
       <section className="hero">
-        
+        {" "}
         <header className="landing-header">
+          {" "}
           <div className="container">
-            <div className="logo">Page Builder</div>
-            <nav className="nav">
-              <a href="#features">Features</a>
-              <a href="#how-it-works">How It Works</a>
+            {" "}
+            <div className="logo">
+              Page Builder
+            </div> {/* Desktop Navigation */}{" "}
+            <nav className="nav desktop-nav">
+              {" "}
+              <a href="#features">Features</a>{" "}
+              <a href="#how-it-works">How It Works</a>{" "}
               <Link to="/auth" className="nav-button">
-                Sign In
-              </Link>
-            </nav>
-          </div>
+                {" "}
+                Sign In{" "}
+              </Link>{" "}
+            </nav>{" "}
+            {/* Mobile Menu Button */}{" "}
+            <button
+              className="mobile-menu-button"
+              onClick={toggleMobileMenu}
+              aria-label="Toggle mobile menu"
+            >
+              {" "}
+              {isMobileMenuOpen ? <FiX /> : <FiMenu />}{" "}
+            </button>{" "}
+            {/* Mobile Navigation */}{" "}
+            <nav
+              className={`mobile-nav ${
+                isMobileMenuOpen ? "mobile-nav-open" : ""
+              }`}
+            >
+              {" "}
+              <a href="#features" onClick={closeMobileMenu}>
+                Features
+              </a>{" "}
+              <a href="#how-it-works" onClick={closeMobileMenu}>
+                How It Works
+              </a>{" "}
+              <Link to="/auth" className="nav-button" onClick={closeMobileMenu}>
+                {" "}
+                Sign In{" "}
+              </Link>{" "}
+            </nav>{" "}
+          </div>{" "}
         </header>
-
         <div className="hero-bg"></div>
         <div className="container">
           <div className="hero-content">
@@ -39,7 +91,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
       <section id="features" className="features">
         <div className="container">
           <h2>Why Choose Our Page Builder</h2>
@@ -82,7 +133,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
       <section id="how-it-works" className="how-it-works">
         <div className="container">
           <h2>How It Works</h2>
@@ -118,7 +168,6 @@ const LandingPage = () => {
           </div>
         </div>
       </section>
-
       <footer className="footer">
         <div className="container">
           <div className="footer-content">

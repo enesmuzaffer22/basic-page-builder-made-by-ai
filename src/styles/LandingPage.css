@@ -547,29 +547,351 @@ body {
   margin: 0;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
+/* Mobile Navigation Styles */
+.mobile-menu-button {
+  display: none;
+  background: none;
+  border: none;
+  color: #f2f2f2;
+  font-size: 24px;
+  cursor: pointer;
+  transition: color 0.2s;
+  z-index: 110;
+  padding: 0;
+}
+
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(5, 10, 24, 0.98);
+  backdrop-filter: blur(10px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  z-index: 100;
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
+}
+
+.mobile-nav-open {
+  display: flex;
+  transform: translateY(0);
+}
+
+.mobile-nav a {
+  color: #f2f2f2;
+  text-decoration: none;
+  font-size: 20px;
+  transition: color 0.2s;
+  text-align: center;
+}
+
+.mobile-nav a:hover {
+  color: #58a6ff;
+}
+
+.mobile-nav .nav-button {
+  background-color: rgba(88, 166, 255, 0.2);
+  color: #58a6ff !important;
+  padding: 15px 30px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  border: 1px solid #58a6ff;
+  font-size: 18px;
+}
+
+.mobile-nav .nav-button:hover {
+  background-color: rgba(88, 166, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(88, 166, 255, 0.3);
+}
+
+/* Responsive Design */
+
+/* Large tablets and small laptops */
+@media (max-width: 1024px) {
+  .container {
+    padding: 0 30px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .steps {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+  }
+
   .hero-content h1 {
-    font-size: 36px;
+    font-size: 48px;
+  }
+
+  .hero-content p {
+    font-size: 20px;
+  }
+}
+
+/* Tablets */
+@media (max-width: 768px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-menu-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .container {
+    padding: 0 20px;
+  }
+
+  .hero {
+    height: auto;
+    min-height: 100vh;
+    padding: 100px 0 50px;
+  }
+
+  .hero-content {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .hero-content h1 {
+    font-size: 40px;
+    line-height: 1.2;
+    margin-bottom: 20px;
   }
 
   .hero-content p {
     font-size: 18px;
+    margin-bottom: 30px;
   }
 
   .hero-buttons {
     flex-direction: column;
     align-items: center;
+    gap: 15px;
   }
 
-  .features h2,
+  .hero-buttons .primary-button,
+  .hero-buttons .secondary-button {
+    width: 100%;
+    max-width: 280px;
+    text-align: center;
+    padding: 15px 30px;
+  }
+
+  .features {
+    padding: 60px 0;
+  }
+
+  .features h2 {
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+
+  .feature-card {
+    max-width: none;
+    padding: 25px;
+  }
+
+  .how-it-works {
+    padding: 60px 0;
+  }
+
   .how-it-works h2 {
-    font-size: 30px;
+    font-size: 32px;
+    margin-bottom: 40px;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .step {
+    padding: 25px;
+  }
+
+  .footer {
+    padding: 40px 0;
   }
 
   .footer .container {
     flex-direction: column;
-    gap: 40px;
+    gap: 30px;
+  }
+
+  .footer-links {
+    justify-content: space-between;
+  }
+
+  .footer-column {
+    min-width: 120px;
+  }
+}
+
+/* Mobile phones */
+@media (max-width: 480px) {
+  .container {
+    padding: 0 15px;
+  }
+
+  .hero .landing-header .container {
+    padding: 20px 15px;
+  }
+
+  .logo {
+    font-size: 20px;
+  }
+
+  .hero {
+    padding: 80px 0 40px;
+  }
+
+  .hero-content h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    margin-bottom: 15px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+    margin-bottom: 25px;
+  }
+
+  .hero-buttons {
+    gap: 12px;
+  }
+
+  .hero-buttons .primary-button,
+  .hero-buttons .secondary-button {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+
+  .features {
+    padding: 50px 0;
+  }
+
+  .features h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .feature-card {
+    padding: 20px;
+  }
+
+  .feature-icon {
+    font-size: 32px;
+    margin-bottom: 15px;
+  }
+
+  .feature-card h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .how-it-works {
+    padding: 50px 0;
+  }
+
+  .how-it-works h2 {
+    font-size: 28px;
+    margin-bottom: 30px;
+  }
+
+  .step {
+    padding: 20px;
+  }
+
+  .step-number {
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    margin-bottom: 15px;
+  }
+
+  .step h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+
+  .footer {
+    padding: 30px 0;
+  }
+
+  .footer-content {
+    min-width: auto;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    gap: 25px;
+    text-align: center;
+  }
+
+  .footer-column {
+    min-width: auto;
+  }
+
+  .footer-column h4 {
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+
+  .mobile-nav a {
+    font-size: 18px;
+  }
+
+  .mobile-nav .nav-button {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+}
+
+/* Small mobile phones */
+@media (max-width: 360px) {
+  .hero-content h1 {
+    font-size: 28px;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .features h2,
+  .how-it-works h2 {
+    font-size: 24px;
+  }
+
+  .feature-card,
+  .step {
+    padding: 15px;
   }
 }
 

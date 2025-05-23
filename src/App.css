@@ -93,6 +93,23 @@ html {
   padding: 16px;
   border-left: 1px solid rgba(88, 166, 255, 0.2);
   color: #f2f2f2;
+  font-size: 12px;
+}
+
+/* Headers in style editor */
+.style-editor-panel h2,
+.style-editor-panel h3,
+.style-editor-panel h4,
+.style-editor-panel h5,
+.style-editor-panel h6 {
+  font-size: 12px;
+  color: #f2f2f2;
+}
+
+/* Labels in style editor */
+.style-editor-panel label {
+  font-size: 12px;
+  color: #f2f2f2;
 }
 
 /* Input fields in editor */
@@ -104,6 +121,7 @@ html {
   border: 1px solid rgba(88, 166, 255, 0.3);
   border-radius: 4px;
   padding: 8px;
+  font-size: 12px;
 }
 
 .style-editor-panel input:focus,
@@ -112,6 +130,17 @@ html {
   border-color: #58a6ff;
   outline: none;
   box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
+/* Buttons in style editor */
+.style-editor-panel button {
+  font-size: 12px;
+}
+
+/* Text content in style editor */
+.style-editor-panel span,
+.style-editor-panel div {
+  font-size: 12px;
 }
 
 /* General Form Styling */
@@ -240,6 +269,41 @@ button:active {
 .layers-panel {
   background-color: #091433;
   border-right: 1px solid rgba(88, 166, 255, 0.2);
+  font-size: 12px;
+}
+
+/* Headers in layers panel */
+.layers-panel h2,
+.layers-panel h3,
+.layers-panel h4,
+.layers-panel h5,
+.layers-panel h6 {
+  font-size: 12px;
+  color: #f2f2f2;
+}
+
+/* Labels in layers panel */
+.layers-panel label {
+  font-size: 12px;
+  color: #f2f2f2;
+}
+
+/* Input fields in layers panel */
+.layers-panel input,
+.layers-panel select,
+.layers-panel textarea {
+  font-size: 12px;
+}
+
+/* Buttons in layers panel */
+.layers-panel button {
+  font-size: 12px;
+}
+
+/* Text content in layers panel */
+.layers-panel span,
+.layers-panel div {
+  font-size: 12px;
 }
 
 /* Prevent scrollbar from covering content */
@@ -255,12 +319,14 @@ button:active {
   background-color: #091433;
   border-bottom: 1px solid rgba(88, 166, 255, 0.2);
   color: #f2f2f2;
+  font-size: 12px;
 }
 
 .layer-item {
   background-color: rgba(9, 20, 51, 0.7);
   border: 1px solid rgba(88, 166, 255, 0.1);
   color: #f2f2f2;
+  font-size: 12px;
 }
 
 .layer-item:hover {
@@ -278,6 +344,41 @@ button:active {
   background-color: #091433;
   border-top: 1px solid rgba(88, 166, 255, 0.2);
   color: #f2f2f2;
+  font-size: 12px;
+}
+
+/* Headers in export panel */
+.export-panel h2,
+.export-panel h3,
+.export-panel h4,
+.export-panel h5,
+.export-panel h6 {
+  font-size: 12px;
+  color: #f2f2f2;
+}
+
+/* Labels in export panel */
+.export-panel label {
+  font-size: 12px;
+  color: #f2f2f2;
+}
+
+/* Input fields in export panel */
+.export-panel input,
+.export-panel select,
+.export-panel textarea {
+  font-size: 12px;
+}
+
+/* Buttons in export panel */
+.export-panel button {
+  font-size: 12px;
+}
+
+/* Text content in export panel */
+.export-panel span,
+.export-panel div {
+  font-size: 12px;
 }
 
 /* Button Styles */
@@ -368,4 +469,104 @@ button:active {
 * {
   scrollbar-width: thin;
   scrollbar-color: rgba(88, 166, 255, 0.3) rgba(9, 20, 51, 0.7);
+}
+
+/* Responsive Warning Styles */
+.responsive-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #050a18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.warning-content {
+  background-color: #091433;
+  border: 1px solid rgba(88, 166, 255, 0.2);
+  border-radius: 16px;
+  padding: 40px 30px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.warning-icon {
+  color: #58a6ff;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.warning-content h2 {
+  color: #f2f2f2;
+  margin: 0 0 16px 0;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.warning-content p {
+  color: rgba(242, 242, 242, 0.8);
+  margin: 0 0 30px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.home-button {
+  background-color: #58a6ff;
+  color: white;
+  border: none;
+  padding: 14px 30px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.3);
+}
+
+.home-button:hover {
+  background-color: #3a7bd5;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(88, 166, 255, 0.4);
+}
+
+.home-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(88, 166, 255, 0.3);
+}
+
+/* Mobile responsive adjustments for warning */
+@media (max-width: 480px) {
+  .warning-content {
+    padding: 30px 20px;
+    margin: 0 10px;
+  }
+
+  .warning-content h2 {
+    font-size: 20px;
+  }
+
+  .warning-content p {
+    font-size: 14px;
+  }
+
+  .home-button {
+    padding: 12px 24px;
+    font-size: 14px;
+  }
+
+  .warning-icon svg {
+    width: 48px;
+    height: 48px;
+  }
 }

@@ -14,6 +14,7 @@ import LayersPanel from "./components/LayersPanel";
 import PreviewScreen from "./components/PreviewScreen";
 import StyleEditor from "./components/StyleEditor";
 import ExportPanel from "./components/ExportPanel";
+import ResponsiveWarning from "./components/ResponsiveWarning";
 import { useAuthStore } from "./store/authStore";
 import { usePagesStore } from "./store/pagesStore";
 import { usePageBuilderStore } from "./store/pageBuilderStore";
@@ -131,76 +132,87 @@ function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/auth" element={<AuthPage />} />
+      <Route
+        path="/auth"
+        element={
+          <ResponsiveWarning>
+            <AuthPage />
+          </ResponsiveWarning>
+        }
+      />
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
-            <WelcomeScreen />
-          </ProtectedRoute>
+          <ResponsiveWarning>
+            <ProtectedRoute>
+              <WelcomeScreen />
+            </ProtectedRoute>
+          </ResponsiveWarning>
         }
       />
       <Route
         path="/editor"
         element={
-          <ProtectedRoute>
-            {currentPageId ? (
-              pageLoading ? (
-                <div className="loading-editor">
-                  <h2>Loading page...</h2>
-                </div>
-              ) : (
-                <div className="app-container">
-                  <header
-                    className="app-header"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <h1 style={{ margin: 0 }}>
-                      Page Builder - {currentPageTitle}
-                    </h1>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button
-                        aria-label="Undo"
-                        className="undo-btn"
-                        onClick={undo}
-                      >
-                        <span
-                          style={{
-                            display: "inline-block",
-                            transform: "scaleX(-1)",
-                          }}
+          <ResponsiveWarning>
+            <ProtectedRoute>
+              {currentPageId ? (
+                pageLoading ? (
+                  <div className="loading-editor">
+                    <h2>Loading page...</h2>
+                  </div>
+                ) : (
+                  <div className="app-container">
+                    <header
+                      className="app-header"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <h1 style={{ margin: 0 }}>
+                        Page Builder - {currentPageTitle}
+                      </h1>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          aria-label="Undo"
+                          className="undo-btn"
+                          onClick={undo}
+                        >
+                          <span
+                            style={{
+                              display: "inline-block",
+                              transform: "scaleX(-1)",
+                            }}
+                          >
+                            ↻
+                          </span>
+                        </button>
+                        <button
+                          aria-label="Redo"
+                          className="redo-btn"
+                          onClick={redo}
                         >
                           ↻
-                        </span>
-                      </button>
-                      <button
-                        aria-label="Redo"
-                        className="redo-btn"
-                        onClick={redo}
-                      >
-                        ↻
-                      </button>
-                    </div>
-                  </header>
+                        </button>
+                      </div>
+                    </header>
 
-                  <main className="app-main">
-                    <LayersPanel />
-                    <div className="app-right-panel">
-                      <PreviewScreen />
-                      <ExportPanel />
-                    </div>
-                    <StyleEditor />
-                  </main>
-                </div>
-              )
-            ) : (
-              <Navigate to="/dashboard" replace />
-            )}
-          </ProtectedRoute>
+                    <main className="app-main">
+                      <LayersPanel />
+                      <div className="app-right-panel">
+                        <PreviewScreen />
+                        <ExportPanel />
+                      </div>
+                      <StyleEditor />
+                    </main>
+                  </div>
+                )
+              ) : (
+                <Navigate to="/dashboard" replace />
+              )}
+            </ProtectedRoute>
+          </ResponsiveWarning>
         }
       />
       <Route path="*" element={<Navigate to="/" replace />} />
