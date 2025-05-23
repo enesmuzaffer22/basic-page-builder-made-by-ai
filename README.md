@@ -1,6 +1,6 @@
 # Basic Page Builder
 
-A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, this drag-and-drop editor features a responsive interface with real-time preview for creating modern web pages.
+A user-friendly and intuitive page builder that allows you to create web pages without writing code. Built with React 19 and TypeScript, this drag-and-drop editor features a real-time preview interface for creating modern web pages.
 
 ## AI Development
 
@@ -41,7 +41,6 @@ The AI assistance was used to help design the architecture, implement features, 
 - **Additional Features**:
   - Undo/redo functionality
   - Keyboard shortcuts
-  - Responsive design tools
 
 ## Getting Started
 
