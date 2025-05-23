@@ -63,14 +63,14 @@ const ResponsiveWarning: React.FC<ResponsiveWarningProps> = ({ children }) => {
               />
             </svg>
           </div>
-          <h2>Uygulamayı Bilgisayarda Kullanmanız Önerilir</h2>
+          <h2>We Recommend Using the App on a Computer</h2>
           <p>
-            Bu uygulama masaüstü deneyimi için optimize edilmiştir. En iyi
-            deneyim için lütfen uygulamayı 1200px veya daha geniş ekranlı bir
-            cihazda kullanın.
+            This application is optimized for desktop experience. For the best
+            experience, please use the app on a device with a screen width of
+            1200px or wider.
           </p>
           <button className="home-button" onClick={handleGoHome}>
-            Ana Sayfaya Dön
+            Return to Homepage
           </button>
         </div>
       </div>
